@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Physics-Informed Neural Networks: PyTorch Q&A - Mohammad H. Erfani</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <ul>
+                <li><a href="../../index.html">Home</a></li>
+                <li><a href="../publications.html">Publications</a></li>
+                <li><a href="../projects.html">Projects</a></li>
+                <li><a href="../blog.html">Blog</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="blog-post-full">
+            <div class="post-header">
+                <h1>Physics-Informed Neural Networks: Common Questions and PyTorch Implementation</h1>
+                <div class="post-meta">
+                    <p class="post-author">By Mohammad H. Erfani</p>
+                    <p class="post-date">Published on September 25, 2025</p>
+                    <div class="post-tags">
+                        <span class="tag">PINNs</span>
+                        <span class="tag">PyTorch</span>
+                        <span class="tag">Differential Equations</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-content">
+                <p class="lead">
+                    Physics-Informed Neural Networks (PINNs) represent a powerful fusion of deep learning and physics, enabling neural networks to learn solutions to differential equations. This post addresses common questions about PINNs and provides practical PyTorch implementation details.
+                </p>
+
+                <h2>❓ Q: Why do we use ŷ in the physics loss when it's the model output?</h2>
+                <p>
+                    <strong>Excellent observation</strong> — but in PINNs, we're not comparing to ground truth at all in the physics loss. The goal is to enforce the differential equation:
+                </p>
+                <div class="math-equation">
+                    $\frac{dy}{dt} = 2t - y$
+                </div>
+                <p>
+                    So, the residual is:
+                </p>
+                <div class="math-equation">
+                    $\text{residual} = \frac{d\hat{y}}{dt} - (2t - \hat{y})$
+                </div>
+                <p>
+                    You use the model output ŷ on both sides because the physics loss enforces <em>structure</em>, not accuracy. We're asking: <strong>does this function satisfy the equation?</strong> Not: is this function equal to a known target?
+                </p>
+                <p>
+                    Even if you had ground truth, you wouldn't use it in the physics loss — it's only used (optionally) in a data loss term.
+                </p>
+
+                <h2>❓ Q: So even with ground truth y, we can't use it in physics loss?</h2>
+                <p>
+                    <strong>Exactly.</strong> That's the power of PINNs — they can work without any labeled data by learning functions that satisfy the physics. If you do have some ground truth data, you can combine a data loss and a physics loss, like this:
+                </p>
+                <div class="math-equation">
+                    <em>loss = loss_data + λ_phys × loss_phys</em>
+                </div>
+                <p>
+                    But <code>loss_phys</code> never uses the ground truth; it purely checks whether the model's prediction obeys the differential equation.
+                </p>
+
+                <h2>❓ Q: Explain the notorious PyTorch autograd line</h2>
+                <p>
+                    This line often confuses beginners:
+                </p>
+                <pre><code>dy_dt = torch.autograd.grad(
+    y_hat, t_train,
+    grad_outputs=torch.ones_like(y_hat),
+    create_graph=True
+)[0]</code></pre>
+
+                <h3>Breakdown:</h3>
+                <ul>
+                    <li><code>y_hat = model(t_train)</code> gives <em>y(t)</em></li>
+                    <li><code>torch.autograd.grad(...)</code> computes <em>dy/dt</em></li>
+                    <li><code>grad_outputs=torch.ones_like(y_hat)</code> is needed for vector output</li>
+                    <li><code>create_graph=True</code> lets you compute higher-order derivatives later</li>
+                    <li><code>[0]</code> extracts the tensor (since grad returns a tuple)</li>
+                </ul>
+                <p>
+                    This is how PINNs calculate derivatives of the output with respect to input automatically using PyTorch's autograd system.
+                </p>
+
+                <h2>❓ Q: How do you compute second derivatives for second-order ODEs?</h2>
+                <p>
+                    For an ODE like:
+                </p>
+                <div class="math-equation">
+                    $\frac{d^2 y}{dt^2} + 3 \frac{dy}{dt} + 2 y = 0$
+                </div>
+                <p>
+                    You'd implement it as:
+                </p>
+                <pre><code>t = torch.linspace(0, 1, 100).reshape(-1, 1).requires_grad_()
+y = model(t)
+
+# First derivative
+dy_dt = torch.autograd.grad(y, t, torch.ones_like(y), 
+                           create_graph=True)[0]
+
+# Second derivative
+d2y_dt2 = torch.autograd.grad(dy_dt, t, torch.ones_like(dy_dt), 
+                             create_graph=True)[0]
+
+# Physics residual
+residual = d2y_dt2 + 3 * dy_dt + 2 * y
+loss_phys = torch.mean(residual**2)</code></pre>
+
+                <p>
+                    This uses autograd <strong>twice</strong> to compute both the first and second derivatives. The <code>create_graph=True</code> is essential both times so PyTorch tracks gradients for backpropagation.
+                </p>
+
+                <h2>Key Takeaways</h2>
+                <ul>
+                    <li><strong>Physics loss enforces structure, not accuracy</strong> — it ensures the model output satisfies the differential equation</li>
+                    <li><strong>Model outputs are used on both sides</strong> of the residual because we're checking equation satisfaction</li>
+                    <li><strong>Ground truth (if available) goes in data loss</strong>, never in physics loss</li>
+                    <li><strong>PyTorch autograd enables automatic differentiation</strong> for computing derivatives needed in physics constraints</li>
+                    <li><strong>Higher-order derivatives require multiple autograd calls</strong> with <code>create_graph=True</code></li>
+                </ul>
+
+                <p>
+                    PINNs represent a paradigm shift in solving differential equations, leveraging the universal approximation capabilities of neural networks while respecting physical laws. This makes them particularly valuable for problems where traditional numerical methods struggle or where data is scarce but physics is well-understood.
+                </p>
+            </div>
+
+            <div class="post-footer">
+                <a href="../blog.html" class="back-to-blog">← Back to Blog</a>
+                <div class="share-buttons">
+                    <a href="#">Share</a>
+                    <a href="#">Tweet</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Mohammad H. Erfani. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

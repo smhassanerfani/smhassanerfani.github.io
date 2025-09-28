@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Atmospheric Composition Emulation - Mohammad H. Erfani</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <ul>
+                <li><a href="../../index.html">Home</a></li>
+                <li><a href="../publications.html">Publications</a></li>
+                <li><a href="../projects.html">Projects</a></li>
+                <li><a href="../blog.html">Blog</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="blog-post-full">
+            <div class="post-header">
+                <h1>Interactive Atmospheric Composition Emulation for NASA GISS Earth System Models (ModelE)</h1>
+                <div class="post-meta">
+                    <p class="post-author">Mohammad Erfani, Kara Lamb, Susanne Bauer, Kostas Tsigaridis, Marcus van Lier-Walqui, Gavin Schmidt</p>
+                    <p class="project-status">Status: Active | NASA GISS & Columbia University CCSR</p>
+                </div>
+            </div>
+
+            <div class="post-content">
+                <p class="lead">
+                    Smart NINT: A machine learning approach that emulates interactive atmospheric composition in Earth System Models, reducing computational costs while maintaining real-time feedback between aerosols and climate processes.
+                </p>
+
+                <h2>Challenge</h2>
+                <p>
+                    Interactive composition simulations in Earth System Models (ESMs) are computationally expensive as they transport numerous gaseous and aerosol tracers at each timestep. This limits higher-resolution transient climate simulations with current computational resources. ESMs like NASA GISS-ModelE3 (ModelE) often use pre-computed monthly-averaged atmospheric composition concentrations (Non-Interactive Tracers or NINT) to reduce computational costs.
+                </p>
+                <p>
+                    While NINT significantly cuts computations, it fails to capture real-time feedback between aerosols and other climate processes by relying on pre-calculated fields.
+                </p>
+
+                <h2>Solution: Smart NINT</h2>
+                <p>
+                    We extended the ModelE NINT version using machine learning (ML) to create <strong>Smart NINT</strong>, which emulates interactive emissions. Smart NINT interactively calculates concentrations using ML with surface emissions and meteorological data as inputs, avoiding full physics parameterizations.
+                </p>
+                <p>
+                    Our approach utilizes a spatiotemporal architecture that possesses a well-matched inductive bias to effectively capture the spatial and temporal dependencies in tracer evolution. Input data processed through the first 20 vertical levels (up to 656 hPa) using the ModelE OMA scheme. This vertical range covers nearly the entire BCB concentration distribution in the troposphere.
+                </p>
+
+                <h2>Technical Approach</h2>
+                <ul>
+                    <li>Spatiotemporal machine learning architecture designed for tracer evolution</li>
+                    <li>Integration with NASA GISS ModelE3 framework</li>
+                    <li>Processing of vertical atmospheric levels up to 656 hPa</li>
+                    <li>Real-time feedback mechanisms between aerosols and climate processes</li>
+                </ul>
+
+                <h2>Project Details</h2>
+                <div class="project-details">
+                    <div class="contributors-section">
+                        <h3>Contributors</h3>
+                        <ul class="contributors-list">
+                            <li><strong>Mohammad Erfani</strong></li>
+                            <li>Kara Lamb</li>
+                            <li>Susanne Bauer</li>
+                            <li>Kostas Tsigaridis</li>
+                            <li>Marcus van Lier-Walqui</li>
+                            <li>Gavin Schmidt</li>
+                        </ul>
+                    </div>
+
+                    <div class="agencies-section">
+                        <h3>Agencies & Institutions</h3>
+                        <ul class="agencies-list">
+                            <li>NASA Goddard Institute for Space Studies (GISS)</li>
+                            <li>Columbia University, Center for Climate Systems Research (CCSR)</li>
+                            <li>Columbia University, Department of Earth and Environmental Engineering</li>
+                            <li>Columbia University, Learning the Earth with Artificial Intelligence & Physics (LEAP)</li>
+                        </ul>
+                    </div>
+
+                    <div class="technologies-section">
+                        <h3>Technologies & Methods</h3>
+                        <div class="tech-tags">
+                            <span class="tech-tag">Machine Learning</span>
+                            <span class="tech-tag">Earth System Models</span>
+                            <span class="tech-tag">NASA GISS ModelE3</span>
+                            <span class="tech-tag">Spatiotemporal Architecture</span>
+                            <span class="tech-tag">Atmospheric Composition</span>
+                            <span class="tech-tag">Climate Modeling</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="post-footer">
+                <a href="../projects.html" class="back-to-blog">← Back to Projects</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Mohammad H. Erfani. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>

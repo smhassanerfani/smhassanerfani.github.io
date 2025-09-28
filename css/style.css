@@ -10,9 +10,8 @@ body {
 
 /* Header and Navigation */
 header {
-    background: #333;
-    color: #fff;
-    padding: 1rem 0;
+    background: transparent;
+    padding: 2rem 0 1rem 0;
     text-align: center;
 }
 
@@ -25,38 +24,257 @@ header nav ul {
 }
 
 header nav ul li {
-    margin: 0 15px;
+    margin: 0 25px;
 }
 
 header nav ul li a {
-    color: #fff;
+    color: #333;
     text-decoration: none;
-    font-weight: bold;
-    transition: color 0.3s ease;
+    font-weight: 500;
+    font-size: 1.1em;
+    padding-bottom: 4px;
+    border-bottom: 2px solid transparent;
+    transition: border-color 0.3s ease;
 }
 
 header nav ul li a:hover {
-    color: #f7b731;
+    border-bottom: 2px solid #0056b3;
+}
+
+header nav ul li a.active {
+    border-bottom: 2px solid #0056b3;
 }
 
 /* Main Content Area */
 main {
     padding: 20px;
-    max-width: 800px;
+    max-width: 1200px;
     margin: 20px auto;
     background: #fff;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-/* Profile Photo on Homepage */
-.intro .profile-photo {
-    display: block;
-    margin: 0 auto 20px;
+/* Home Page Layout */
+.home-container {
+    max-width: 1150px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.top-section {
+    display: flex;
+    align-items: flex-start;
+    margin-bottom: 40px;
+    gap: 60px;
+    position: relative;
+}
+
+.profile-section {
+    flex-shrink: 0;
+    margin-left: 35px; /* Aligns 280px photo with center of 350px contact box (including padding) */
+}
+
+.profile-photo-home {
+    width: 280px;
+    height: 280px;
     border-radius: 50%;
-    border: 3px solid #f7b731;
-    width: 350px;
-    height: 350px;
+    border: 4px solid #f7b731;
     object-fit: cover;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.name-affiliation {
+    flex: 1;
+    padding-top: 10px;
+    margin-left: 30px; /* Aligns with the left edge of biography section below */
+}
+
+.name-affiliation h1 {
+    font-size: 2.5em;
+    color: #0056b3;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.affiliations {
+    line-height: 1.6;
+}
+
+.affiliation {
+    font-size: 1.3em;
+    color: #495057;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.institution {
+    font-size: 1.1em;
+    color: #6c757d;
+    margin-top: 0;
+    margin-bottom: 2px;
+}
+
+.bottom-section {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+.contact-section {
+    flex: 0 0 300px;
+    background: #f8f9fa;
+    padding: 25px;
+    border-radius: 8px;
+    border-left: 4px solid #f7b731;
+}
+
+.contact-section h3 {
+    color: #0056b3;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+}
+
+.contact-item {
+    margin-bottom: 12px;
+    display: flex;
+    flex-direction: column;
+}
+
+.contact-label {
+    font-weight: bold;
+    font-size: 0.95em;
+    color: #495057;
+    margin-bottom: 2px;
+}
+
+.contact-value {
+    font-size: 0.95em;
+    line-height: 1.4;
+    color: #6c757d;
+    margin-left: 15px;
+}
+
+.contact-value.secondary {
+    margin-top: 2px;
+}
+
+.contact-social {
+    margin-left: 15px;
+    display: flex;
+    gap: 8px;
+    margin-top: 2px;
+}
+
+.contact-social a {
+    font-size: 0.9em;
+    text-decoration: none;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    font-weight: bold;
+    color: white;
+}
+
+.contact-social a:hover {
+    transform: scale(1.1);
+}
+
+.contact-social a.linkedin {
+    background-color: #0077b5;
+}
+
+.contact-social a.linkedin:hover {
+    background-color: #005885;
+}
+
+.contact-social a.twitter {
+    background-color: #000000;
+    font-family: 'Times New Roman', serif;
+}
+
+.contact-social a.twitter:hover {
+    background-color: #333333;
+}
+
+.contact-social a.researchgate {
+    background-color: #00ccbb;
+    font-size: 0.8em;
+}
+
+.contact-social a.researchgate:hover {
+    background-color: #009688;
+}
+
+.bio-research {
+    flex: 1;
+}
+
+.bio-research h3 {
+    color: #0056b3;
+    font-size: 1.3em;
+    margin-bottom: 15px;
+    margin-top: 25px;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 5px;
+}
+
+.bio-research h3:first-child {
+    margin-top: 0;
+}
+
+.biography {
+    line-height: 1.7;
+    text-align: justify;
+    color: #495057;
+    margin-bottom: 25px;
+}
+
+.research-interests {
+    list-style: none;
+    padding: 0;
+}
+
+.research-interests li {
+    background: #e3f2fd;
+    color: #0d47a1;
+    padding: 8px 15px;
+    margin-bottom: 8px;
+    border-radius: 4px;
+    border-left: 3px solid #0056b3;
+    font-size: 0.95em;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .top-section {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 30px;
+    }
+    
+    .profile-photo-home {
+        width: 220px;
+        height: 220px;
+        border-radius: 8px;
+    }
+    
+    .name-affiliation h1 {
+        font-size: 2em;
+    }
+    
+    .bottom-section {
+        flex-direction: column;
+        gap: 20px;
+    }
+    
+    .contact-section {
+        flex: none;
+    }
 }
 
 /* Item Styling (Publications & Projects) */
@@ -74,6 +292,94 @@ main {
     color: #0056b3;
     font-size: 1.2em;
     margin-bottom: 10px;
+}
+
+/* Enhanced Project Styling */
+.project-description {
+    margin-bottom: 30px;
+    line-height: 1.7;
+}
+
+.project-description p {
+    margin-bottom: 15px;
+    text-align: justify;
+    color: #495057;
+}
+
+.project-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 30px;
+    margin-top: 25px;
+}
+
+.contributors-section, .agencies-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    border-left: 4px solid #0056b3;
+}
+
+.technologies-section {
+    grid-column: 1 / -1;
+    margin-top: 10px;
+}
+
+.project-details h3 {
+    color: #0056b3;
+    font-size: 1.1em;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #e9ecef;
+    padding-bottom: 5px;
+}
+
+.contributors-list, .agencies-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.contributors-list li, .agencies-list li {
+    padding: 5px 0;
+    color: #495057;
+    font-size: 0.95em;
+}
+
+.contributors-list li strong {
+    color: #0056b3;
+}
+
+.tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.tech-tag {
+    background: #e3f2fd;
+    color: #0d47a1;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    border: 1px solid #90caf9;
+    font-weight: 500;
+}
+
+/* Responsive Project Layout */
+@media (max-width: 768px) {
+    .project-details {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .technologies-section {
+        grid-column: 1;
+    }
+    
+    .tech-tags {
+        justify-content: center;
+    }
 }
 
 /* Footer */
@@ -111,6 +417,36 @@ footer {
     color: #6c757d;
     font-size: 0.9em;
     margin-bottom: 10px;
+}
+
+.project-status {
+    color: #6c757d;
+    font-size: 0.9em;
+    margin-bottom: 10px;
+    font-weight: 500;
+}
+
+.project-post {
+    border-bottom: 1px solid #e9ecef;
+    padding-bottom: 25px;
+    margin-bottom: 30px;
+}
+
+.project-post:last-child {
+    border-bottom: none;
+}
+
+.project-post h2 {
+    color: #0056b3;
+    font-size: 1.4em;
+    margin-bottom: 10px;
+    line-height: 1.3;
+}
+
+.project-excerpt {
+    line-height: 1.6;
+    margin-bottom: 15px;
+    color: #495057;
 }
 
 .post-tags {
@@ -222,6 +558,23 @@ footer {
 
 .post-content li {
     margin-bottom: 8px;
+}
+
+/* Mathematical Equations */
+.math-equation {
+    background: #f8f9fa;
+    border-left: 4px solid #0056b3;
+    padding: 15px 20px;
+    margin: 20px 0;
+    text-align: center;
+    font-size: 1.2em;
+    font-family: 'Times New Roman', serif;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.math-equation em {
+    font-style: italic;
 }
 
 .post-references {

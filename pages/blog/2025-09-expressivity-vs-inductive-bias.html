@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Expressivity vs Inductive Bias in Machine Learning - Mohammad H. Erfani</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <meta name="description" content="Understanding the fundamental trade-off between model complexity and built-in assumptions in machine learning, with examples from CNNs vs Vision Transformers.">
+</head>
+<body>
+
+    <header>
+        <nav>
+            <ul>
+                <li><a href="../../index.html">Home</a></li>
+                <li><a href="../publications.html">Publications</a></li>
+                <li><a href="../projects.html">Projects</a></li>
+                <li><a href="../blog.html">Blog</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <article class="blog-post-full">
+            <header class="post-header">
+                <h1>The Trade-off Between Model Expressivity and Inductive Bias in Machine Learning</h1>
+                <div class="post-meta">
+                    <p class="post-date">Published on September 24, 2025</p>
+                    <p class="post-author">By Mohammad H. Erfani</p>
+                    <div class="post-tags">
+                        <span class="tag">Machine Learning</span>
+                        <span class="tag">Model Theory</span>
+                        <span class="tag">Inductive Bias</span>
+                        <span class="tag">Deep Learning</span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="post-content">
+                <p class="lead">
+                    Understanding the balance between model complexity and built-in assumptions is fundamental to successful machine learning. This trade-off affects everything from training efficiency to generalization performance, and mastering it is key to choosing the right approach for your specific problem.
+                </p>
+
+                <p>
+                    Imagine I have a simple dataset:
+                </p>
+                <ul>
+                    <li>x = {1, 2, 4, 6, 8, 10}</li>
+                    <li>y = {2, 4, 8, 12, 16, 20}</li>
+                </ul>
+
+                <p>
+                    It's immediately obvious that a linear function y = ax + b can easily fit this data with minimal effort for optimization and finding the coefficients. But what if we wanted to fit a quadratic function y = ax² + bx + c to this same dataset?
+                </p>
+
+                <p>
+                    The first question is: <strong>can we?</strong> We definitely can, as the quadratic model has higher expressivity. In other words, <strong>the quadratic function represents a larger hypothesis space that encompasses all possible linear relationships plus non-linear ones</strong>. Any pattern that a linear model can capture, a quadratic model can also represent.
+                </p>
+
+                <p>
+                    But what's the caveat? The caveat is that for the quadratic formula, we have to optimize 3 parameters instead of 2 (compared to the linear formula), and depending on the optimization method, the quadratic model might need more data to be properly optimized and avoid overfitting.
+                </p>
+
+                <p>
+                    Thus, the quadratic formula can definitely explain our data, but <strong>at the cost of more complex optimization</strong>. This is generally how machine learning works in reality: <strong>ML models normally have much higher expressivity compared to the complexity of our underlying data patterns</strong>. In our analogy, even if our data follows a simple linear relationship (degree 1), we typically fit high-degree polynomials <em>y</em> = <em>a</em><sub>n</sub><em>x<sup>n</sup></em> + <em>a</em><sub>n-1</sub><em>x<sup>n-1</sup></em> + ... + <em>a</em><sub>1</sub><em>x</em> + <em>c</em>, regardless of the true degree of our data. This over-parameterization is common because we rarely know the true complexity of our data patterns beforehand.
+                </p>
+
+                <p>
+                    These expressive models can generally explain our data, but the success depends on how we configure our experimental setup, adjust our hyperparameters, and—critically—<strong>the amount of data we have</strong>.
+                </p>
+
+                <p>
+                    <strong>The more data we have, the more expressive model we can afford to use.</strong> As you can see, the computational cost is related to how large our models are, and it's somewhat independent of how simple or linear our underlying data patterns are. That's why the training procedure is affected more by model complexity than by data simplicity.
+                </p>
+
+                <h2>The Role of Inductive Bias</h2>
+                <p>
+                    Now, what if we have limited data, and we know our relationship is linear? In this case, choosing the linear function makes sense. In this analogy, <strong>the linear model is more efficient for optimization but carries a very strong pre-assumption: that the data follows a linear relationship</strong>.
+                </p>
+
+                <p>
+                    Models that have such built-in assumptions are said to have <strong>inductive bias</strong>. Inductive bias makes training faster and helps models converge sooner, <strong>but it comes with the risk that if our assumptions are wrong, the model may be too constrained to capture the true underlying patterns</strong>.
+                </p>
+
+                <h2>Real-World Example: CNNs vs. Vision Transformers</h2>
+                <p>
+                    This trade-off is beautifully illustrated in the evolution from Convolutional Neural Networks (CNNs) to Vision Transformers (ViTs) in computer vision:
+                </p>
+
+                <p>
+                    <strong>CNNs have strong inductive biases:</strong>
+                </p>
+                <ul>
+                    <li>Translation invariance (assuming objects look the same regardless of position)</li>
+                    <li>Local connectivity (assuming nearby pixels are more related)</li>
+                    <li>Hierarchical processing (learning simple to complex features)</li>
+                </ul>
+
+                <p>
+                    <strong>ViTs have weaker inductive biases:</strong>
+                </p>
+                <ul>
+                    <li>Minimal assumptions about spatial relationships</li>
+                    <li>Can learn any pattern given sufficient data</li>
+                    <li>More flexible but require larger datasets</li>
+                </ul>
+
+                <p>
+                    When data is limited, CNNs often outperform ViTs because their inductive biases act as helpful constraints. However, with massive datasets (like ImageNet-21K), ViTs can learn the "right" spatial relationships from data and often surpass CNNs because they're not constrained by potentially incorrect assumptions.
+                </p>
+
+                <h2>The Key Insight</h2>
+                <p>
+                    The choice between strong and weak inductive bias isn't about "good" or "bad"—it's about <strong>matching your model's assumptions to your problem constraints:</strong>
+                </p>
+
+                <ul>
+                    <li><strong>Choose strong inductive bias</strong> when you have limited data, clear domain knowledge, or computational constraints</li>
+                    <li><strong>Choose weak inductive bias</strong> when you have abundant data, complex patterns, and sufficient computational resources</li>
+                </ul>
+
+                <p>
+                    The art of machine learning lies in finding the sweet spot between expressivity and appropriate constraints for your specific problem and data regime.
+                </p>
+
+                <h2>Practical Implications</h2>
+                <p>
+                    In my work at NASA GISS, this trade-off is particularly relevant when developing machine learning models for Earth system applications. For atmospheric composition modeling, we often have extensive datasets from satellites and ground stations, allowing us to use more expressive models. However, for localized phenomena or when computational resources are limited, models with stronger inductive biases based on physical principles often perform better.
+                </p>
+
+                <p>
+                    Understanding this fundamental trade-off helps us make informed decisions about model architecture, training strategies, and when to incorporate domain knowledge versus letting the model learn patterns from data.
+                </p>
+            </div>
+
+            <footer class="post-footer">
+                <div class="post-navigation">
+                    <a href="../blog.html" class="back-to-blog">← Back to Blog</a>
+                </div>
+                <div class="post-share">
+                    <p>Share this post:</p>
+                    <div class="share-buttons">
+                        <a href="#" target="_blank">Twitter</a>
+                        <a href="#" target="_blank">LinkedIn</a>
+                        <a href="#" target="_blank">Email</a>
+                    </div>
+                </div>
+            </footer>
+        </article>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Mohammad H. Erfani. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
