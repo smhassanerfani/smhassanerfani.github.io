@@ -308,7 +308,7 @@ main {
 
 .project-details {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 30px;
     margin-top: 25px;
 }
@@ -347,6 +347,12 @@ main {
 
 .contributors-list li strong {
     color: #0056b3;
+}
+
+.project-role {
+    font-style: italic;
+    color: #666;
+    font-size: 0.9em;
 }
 
 .tech-tags {
