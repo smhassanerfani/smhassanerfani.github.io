@@ -25,50 +25,51 @@
                 <h1>Predicting Drought, Preventing Famine: Advanced Soil Moisture Analysis for Climate Resilience</h1>
                 <div class="post-meta">
                     <p class="post-author">Mohammad H. Erfani</p>
-                    <p class="project-status">Status: Active | NASA GISS & Columbia University CCSR</p>
+                    <p class="project-status">Status: Pending | NASA GISS & Columbia University CCSR</p>
                 </div>
             </div>
 
             <div class="post-content">
-                <p class="lead">
-                    Surface soil moisture (SSM), depths of 3–5 cm, data is vital for crop yield estimation, drought monitoring, irrigation management, and urban water planning. This project addresses critical gaps in global soil moisture monitoring through innovative machine learning approaches.
+                <p class="lead" style="text-align: justify;">
+                    A two-phase methodology combining temporal Graph Neural Networks (GNNs) with physics-based data assimilation to create continuous global soil moisture coverage from satellite missions, addressing critical gaps in drought monitoring and food security applications.
                 </p>
 
                 <h2>Problem Statement</h2>
-                <p>
-                    Surface soil moisture data represents a valuable input for food security, famine early warning system networks, as well as food action collaborative programs such as Food for Humanity Initiative (F4Hi), which is designed to support interdisciplinary research on healthy and sustainable food systems. Satellite-based soil moisture retrieval has advanced significantly in recent years through missions like the Soil Moisture and Ocean Salinity (SMOS) and NASA's Soil Moisture Active Passive (SMAP).
+                <p style="text-align: justify;">
+                    Surface soil moisture data represents a valuable input for food security, famine early warning system networks, as well as food action collaborative programs. Satellite-based soil moisture retrieval has advanced significantly in recent years through missions like the Soil Moisture and Ocean Salinity (SMOS) and NASA's Soil Moisture Active Passive (SMAP). These missions provide critical data on surface soil moisture (SSM) at depths of 3–5 cm, which is vital for crop yield estimation, drought monitoring, irrigation management, and urban water planning.
                 </p>
-                <p>
-                    Currently, no truly coherent, comprehensive global soil moisture database with systematic quality control exists. This challenge is even more pronounced for root-zone soil moisture (RZSM), depths of 30–110 cm, which traditionally requires ground-based measurements that are far too sparse to calculate RZSM at global- or even regional-scales.
+                <p style="text-align: justify;">
+                    Currently, no truly coherent, comprehensive global soil moisture database with systematic quality control exists. This challenge is even more pronounced for root-zone soil moisture (RZSM) at depths of 30–110 cm, which traditionally requires ground-based measurements that are far too sparse to calculate RZSM at global or even regional scales.
                 </p>
 
-                <h2>Methodology: Two-Phase Approach</h2>
+                <h2>Proposed Solution</h2>
                 <h3>Phase 1: Machine Learning Gap-Filling</h3>
-                <p>
-                    We apply spatio-temporal machine learning (ML) techniques to interpolate data gaps in daily soil moisture products from satellite missions like SMAP, creating continuous global coverage. This ML approach is particularly well-suited for hydrologic applications characterized by high spatial and temporal heterogeneity, as ML methods can better capture complex nonlinear relationships in heterogeneous systems compared to traditional process-based or physical models.
+                <p style="text-align: justify;">
+                    We apply temporal GNNs techniques to interpolate data gaps in daily soil moisture products from satellite missions like SMAP, creating continuous global coverage. This machine learning (ML) approach is particularly well-suited for hydrologic applications characterized by high spatial and temporal heterogeneity, as ML methods can better capture complex nonlinear relationships in heterogeneous systems compared to traditional process-based or physical models.
                 </p>
 
                 <h3>Phase 2: Physics-Based Data Assimilation</h3>
-                <p>
+                <p style="text-align: justify;">
                     We employ these enhanced SSM datasets as initial conditions for estimating RZSM profiles using Reduced-Order Variational Data Assimilation. This phase leverages physics-based simulation to couple the assimilation of SSM data from the first phase, yielding more accurate estimates of soil moisture profiles at global scale.
                 </p>
 
-                <h2>Expected Impact</h2>
-                <p>
-                    This research promises transformative benefits across multiple sectors:
-                </p>
+                <h2>Tools & Techniques</h2>
                 <ul>
-                    <li><strong>Agriculture:</strong> Enhanced crop yield forecasting and efficient irrigation scheduling, directly supporting global food security efforts in vulnerable regions</li>
-                    <li><strong>Disaster Management:</strong> Strengthened early warning systems for droughts and floods, potentially saving lives and reducing economic losses</li>
-                    <li><strong>Climate Science:</strong> More accurate land-surface modeling, improving understanding of water and energy fluxes between land and atmosphere</li>
+                    <li>Satellite data retrieval and processing from SMAP mission for global soil moisture monitoring</li>
+                    <li>Temporal Graph Neural Networks for spatio-temporal soil moisture gap-filling and interpolation</li>
+                    <li>Physics-based soil moisture modeling for root-zone estimation and profile simulation</li>
+                    <li>Reduced-Order Variational Data Assimilation for integrating satellite observations with physical models</li>
                 </ul>
 
-                <h2>Project Details</h2>
+                <h2>Research Team & Collaborations</h2>
                 <div class="project-details">
                     <div class="contributors-section">
                         <h3>Contributors</h3>
                         <ul class="contributors-list">
-                            <li><strong>Mohammad Erfani</strong> - Principal Investigator</li>
+                            <li>
+                                <strong>Mohammad Erfani</strong><br>
+                                <span class="project-role">Principal Investigator</span>
+                            </li>
                         </ul>
                     </div>
 
@@ -79,24 +80,8 @@
                             <li>Columbia University, Center for Climate Systems Research (CCSR)</li>
                         </ul>
                     </div>
-
-                    <div class="technologies-section">
-                        <h3>Technologies & Methods</h3>
-                        <div class="tech-tags">
-                            <span class="tech-tag">Machine Learning</span>
-                            <span class="tech-tag">Spatio-temporal Analysis</span>
-                            <span class="tech-tag">SMAP Satellite Data</span>
-                            <span class="tech-tag">SMOS Mission</span>
-                            <span class="tech-tag">Data Assimilation</span>
-                            <span class="tech-tag">Soil Moisture Modeling</span>
-                            <span class="tech-tag">Drought Monitoring</span>
-                            <span class="tech-tag">Food Security</span>
-                            <span class="tech-tag">Climate Resilience</span>
-                            <span class="tech-tag">Agricultural Forecasting</span>
-                            <span class="tech-tag">Variational Methods</span>
-                        </div>
-                    </div>
                 </div>
+
             </div>
 
             <div class="post-footer">
