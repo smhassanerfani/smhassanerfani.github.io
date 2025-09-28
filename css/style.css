@@ -529,6 +529,7 @@ footer {
     font-size: 1.2em;
     color: #495057;
     font-weight: 300;
+    text-align: justify;
     margin-bottom: 30px;
     padding: 20px;
     background: #f8f9fa;
