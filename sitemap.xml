@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset
+      xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+      xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
+            http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
+
+
+<url>
+  <loc>https://smhassanerfani.github.io/</loc>
+  <lastmod>2025-09-29T00:40:01+00:00</lastmod>
+  <priority>1.00</priority>
+</url>
+<url>
+  <loc>https://smhassanerfani.github.io/index.html</loc>
+  <lastmod>2025-09-29T00:40:01+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://smhassanerfani.github.io/pages/publications.html</loc>
+  <lastmod>2025-09-29T00:40:01+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://smhassanerfani.github.io/pages/projects.html</loc>
+  <lastmod>2025-09-29T00:40:01+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://smhassanerfani.github.io/pages/blog.html</loc>
+  <lastmod>2025-09-29T00:40:01+00:00</lastmod>
+  <priority>0.80</priority>
+</url>
+<url>
+  <loc>https://smhassanerfani.github.io/pages/projects/atmospheric-composition-emulation.html</loc>
+  <lastmod>2025-09-29T00:40:01+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://smhassanerfani.github.io/pages/projects/stochastic-flood-mapping.html</loc>
+  <lastmod>2025-09-29T00:40:01+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://smhassanerfani.github.io/pages/projects/fire-model-reinsurance.html</loc>
+  <lastmod>2025-09-29T00:40:01+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://smhassanerfani.github.io/pages/projects/soil-moisture-analysis.html</loc>
+  <lastmod>2025-09-29T00:40:01+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+<url>
+  <loc>https://smhassanerfani.github.io/pages/blog/2025-09-expressivity-vs-inductive-bias.html</loc>
+  <lastmod>2025-09-29T00:40:01+00:00</lastmod>
+  <priority>0.64</priority>
+</url>
+
+
+</urlset>
