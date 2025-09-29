@@ -26,13 +26,7 @@
                 <h1>The Trade-off Between Model Expressivity and Inductive Bias in Machine Learning</h1>
                 <div class="post-meta">
                     <p class="post-date">Published on September 24, 2025</p>
-                    <p class="post-author">By Mohammad H. Erfani</p>
-                    <div class="post-tags">
-                        <span class="tag">Machine Learning</span>
-                        <span class="tag">Model Theory</span>
-                        <span class="tag">Inductive Bias</span>
-                        <span class="tag">Deep Learning</span>
-                    </div>
+                    <p class="post-author">Mohammad H. Erfani</p>
                 </div>
             </header>
 
@@ -45,12 +39,12 @@
                     Imagine I have a simple dataset:
                 </p>
                 <ul>
-                    <li>x = {1, 2, 4, 6, 8, 10}</li>
-                    <li>y = {2, 4, 8, 12, 16, 20}</li>
+                    <li><em>x</em> = {1, 2, 4, 6, 8, 10}</li>
+                    <li><em>y</em> = {2, 4, 8, 12, 16, 20}</li>
                 </ul>
 
                 <p>
-                    It's immediately obvious that a linear function y = ax + b can easily fit this data with minimal effort for optimization and finding the coefficients. But what if we wanted to fit a quadratic function y = ax² + bx + c to this same dataset?
+                    It's immediately obvious that a linear function <em>y</em> = <em>ax</em> + <em>b</em> can easily fit this data with minimal effort for optimization and finding the coefficients. But what if we wanted to fit a quadratic function <em>y</em> = <em>ax</em><sup>2</sup> + <em>bx</em> + <em>c</em> to this same dataset?
                 </p>
 
                 <p>
@@ -62,7 +56,7 @@
                 </p>
 
                 <p>
-                    Thus, the quadratic formula can definitely explain our data, but <strong>at the cost of more complex optimization</strong>. This is generally how machine learning works in reality: <strong>ML models normally have much higher expressivity compared to the complexity of our underlying data patterns</strong>. In our analogy, even if our data follows a simple linear relationship (degree 1), we typically fit high-degree polynomials <em>y</em> = <em>a</em><sub>n</sub><em>x<sup>n</sup></em> + <em>a</em><sub>n-1</sub><em>x<sup>n-1</sup></em> + ... + <em>a</em><sub>1</sub><em>x</em> + <em>c</em>, regardless of the true degree of our data. This over-parameterization is common because we rarely know the true complexity of our data patterns beforehand.
+                    Thus, the quadratic formula can definitely explain our data, but <strong>at the cost of more complex optimization</strong>. This is generally how machine learning works in reality: <strong>ML models normally have much higher expressivity compared to the complexity of our underlying data patterns</strong>. In our analogy, even if our data follows a simple linear relationship (degree 1), we typically fit high-degree polynomials <em>y</em> = <em>a</em><sub>n</sub><em>x</em><sup>n</sup> + <em>a</em><sub>n-1</sub><em>x</em><sup>n-1</sup> + ... + <em>a</em><sub>1</sub><em>x</em> + <em>c</em>, regardless of the true degree of our data. This over-parameterization is common because we rarely know the true complexity of our data patterns beforehand.
                 </p>
 
                 <p>
@@ -109,43 +103,40 @@
                     When data is limited, CNNs often outperform ViTs because their inductive biases act as helpful constraints. However, with massive datasets (like ImageNet-21K), ViTs can learn the "right" spatial relationships from data and often surpass CNNs because they're not constrained by potentially incorrect assumptions.
                 </p>
 
-                <h2>The Key Insight</h2>
+                <h2>Beyond the Trade-off: Combining Both Advantages</h2>
                 <p>
-                    The choice between strong and weak inductive bias isn't about "good" or "bad"—it's about <strong>matching your model's assumptions to your problem constraints:</strong>
-                </p>
-
-                <ul>
-                    <li><strong>Choose strong inductive bias</strong> when you have limited data, clear domain knowledge, or computational constraints</li>
-                    <li><strong>Choose weak inductive bias</strong> when you have abundant data, complex patterns, and sufficient computational resources</li>
-                </ul>
-
-                <p>
-                    The art of machine learning lies in finding the sweet spot between expressivity and appropriate constraints for your specific problem and data regime.
-                </p>
-
-                <h2>Practical Implications</h2>
-                <p>
-                    In my work at NASA GISS, this trade-off is particularly relevant when developing machine learning models for Earth system applications. For atmospheric composition modeling, we often have extensive datasets from satellites and ground stations, allowing us to use more expressive models. However, for localized phenomena or when computational resources are limited, models with stronger inductive biases based on physical principles often perform better.
+                    It's important to note that <strong>expressivity and inductive bias are not necessarily mutually exclusive</strong>. Modern machine learning increasingly focuses on architectures that combine high expressivity with carefully designed inductive biases, giving us the best of both worlds.
                 </p>
 
                 <p>
-                    Understanding this fundamental trade-off helps us make informed decisions about model architecture, training strategies, and when to incorporate domain knowledge versus letting the model learn patterns from data.
+                    Consider these examples:
                 </p>
-            </div>
 
-            <footer class="post-footer">
-                <div class="post-navigation">
+                <p>
+                    <strong>Hybrid CNN-Transformer Architectures:</strong> Models like ConViT and CvT combine convolutional layers (with strong spatial inductive bias) with transformer blocks (high expressivity). They start with CNN-like processing to leverage spatial assumptions, then use transformers for more flexible global reasoning.
+                </p>
+
+                <p>
+                    <strong>Graph Neural Networks (GNNs):</strong> These models have strong inductive bias for graph-structured data (assuming relationships matter) while maintaining high expressivity through multiple layers and attention mechanisms. They can model complex relationships while respecting the underlying graph structure.
+                </p>
+
+                <p>
+                    <strong>Physics-Informed Neural Networks (PINNs):</strong> These combine the expressivity of deep networks with the inductive bias of physical laws. The model can learn complex patterns while being constrained to respect known physics, leading to better generalization with less data.
+                </p>
+
+                <p>
+                    <strong>Regularization Techniques:</strong> Methods like dropout, batch normalization, and data augmentation add inductive biases to highly expressive models without reducing their theoretical capacity. They guide the model toward better solutions while maintaining flexibility.
+                </p>
+
+                <p>
+                    The key insight is that <strong>smart architectural choices can embed useful inductive biases into highly expressive models</strong>, allowing us to benefit from both fast convergence and strong generalization without sacrificing the ability to capture complex patterns when needed.
+                </p>
+
+                <div class="post-footer">
                     <a href="../blog.html" class="back-to-blog">← Back to Blog</a>
                 </div>
-                <div class="post-share">
-                    <p>Share this post:</p>
-                    <div class="share-buttons">
-                        <a href="#" target="_blank">Twitter</a>
-                        <a href="#" target="_blank">LinkedIn</a>
-                        <a href="#" target="_blank">Email</a>
-                    </div>
-                </div>
-            </footer>
+
+            </div>
         </article>
     </main>
 
