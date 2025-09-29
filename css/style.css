@@ -47,16 +47,16 @@ header nav ul li a.active {
 
 /* Main Content Area */
 main {
-    padding: 20px;
-    max-width: 1200px;
+    max-width: 1000px;
     margin: 20px auto;
     background: #fff;
     box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    padding: 20px 2rem;  /* 20px top/bottom, 2rem left/right */
 }
 
 /* Home Page Layout */
 .home-container {
-    max-width: 1150px;
+    max-width: 950px;
     margin: 0 auto;
     padding: 20px;
 }
@@ -500,7 +500,7 @@ footer {
 
 /* Individual Blog Post Styling */
 .blog-post-full {
-    max-width: 800px;
+    max-width: 750px;
     margin: 0 auto;
     line-height: 1.7;
 }
