@@ -54,6 +54,35 @@ main {
     padding: 20px 2rem;  /* 20px top/bottom, 2rem left/right */
 }
 
+/* Code Blocks */
+pre {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 16px;
+    margin: 16px 0;
+    overflow-x: auto;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.9em;
+    line-height: 1.4;
+}
+
+pre code {
+    background-color: transparent;
+    padding: 0;
+    border: none;
+    border-radius: 0;
+}
+
+code {
+    background-color: #f8f9fa;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 0.9em;
+    color: #495057;
+}
+
 /* Home Page Layout */
 .home-container {
     max-width: 950px;
@@ -509,6 +538,7 @@ footer {
     border-bottom: 2px solid #e9ecef;
     padding-bottom: 20px;
     margin-bottom: 30px;
+    text-align: center;
 }
 
 .post-header h1 {
@@ -520,6 +550,7 @@ footer {
 
 .post-meta {
     color: #6c757d;
+    text-align: center;
 }
 
 .post-author {
@@ -569,15 +600,15 @@ footer {
 
 /* Mathematical Equations */
 .math-equation {
-    background: #f8f9fa;
-    border-left: 4px solid #0056b3;
+    /* background: #f8f9fa; */
+    /* border-left: 4px solid #0056b3; */
     padding: 15px 20px;
     margin: 20px 0;
     text-align: center;
     font-size: 1.2em;
     font-family: 'Times New Roman', serif;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    /* border-radius: 4px; */
+    /* box-shadow: 0 2px 4px rgba(0,0,0,0.1); */
 }
 
 .math-equation em {

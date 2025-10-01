@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Solving an ODE: Symbolic, Numerical, and PINNs - Mohammad H. Erfani</title>
+    <link rel="stylesheet" href="../../css/style.css">
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']]
+            }
+        };
+    </script>
+</head>
+<body>
+
+    <header>
+        <nav>
+            <ul>
+                <li><a href="../../index.html">Home</a></li>
+                <li><a href="../publications.html">Publications</a></li>
+                <li><a href="../projects.html">Projects</a></li>
+                <li><a href="../blog.html">Blog</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <article class="blog-post-full">
+            <header class="post-header">
+                <h1>Solving an ODE: Symbolic, Numerical, and PINNs</h1>
+                <div class="post-meta">
+                    <p class="post-date">Published on October 1, 2025</p>
+                    <p class="post-author">Mohammad H. Erfani</p>
+                </div>
+            </header>
+
+            <div class="post-content">
+                <p class="lead">
+                    In this post, we will solve a simple Ordinary Differential Equation (ODE) in three different ways: analytically using SymPy, numerically using the Euler method, and with Physics-Informed Neural Networks (PINNs) in PyTorch. At the end, we'll compare their results and insights.
+                </p>
+
+                <h2>Problem Definition</h2>
+                <p>We want to solve the following ODE:</p>
+                <div class="math-equation">
+                    $$\frac{dy}{dt} = 2t - y$$
+                </div>
+                <p>with the initial condition:</p>
+                <div class="math-equation">
+                    $$y(0) = -1$$
+                </div>
+
+                <h2>1. Symbolic Solution with SymPy</h2>
+                <p>Key steps in the symbolic approach:</p>
+                <ul>
+                    <li>Define symbolic variables (dependent and independent)</li>
+                    <li>Create the differential equation using <code>sp.Eq</code></li>
+                    <li>Solve without initial conditions to see the general solution</li>
+                    <li>Apply initial conditions to get the particular solution</li>
+                </ul>
+                
+                <p><strong>Complete SymPy implementation:</strong></p>
+                <pre><code id="sympy-code">Loading code from sympy_solution.py...</code></pre>
+
+                <p>The exact solution is:</p>
+                <div class="math-equation">
+                    $$y(t) = 2t - 2 + e^{-t}$$
+                </div>
+
+                <h2>2. Numerical Solution with the Euler Method</h2>
+                <p>The Euler method is one of the simplest numerical solvers for ODEs. It uses the iterative formula:</p>
+                <div class="math-equation">
+                    $$y_{i+1} = y_i + h \cdot f(t_i, y_i)$$
+                </div>
+                <p>where <em>h</em> is the time step.</p>
+
+                <p style="text-align: justify;"><strong>Think about it:</strong> instead of solving the entire equation, we just "walk along the slope" (gradient) at each step. It's like saying: <em>I don't know the full path, but I can guess the next step if I know the slope right here.</em></p>
+
+                <p>That's the beauty of the gradient that it can act as a guide to approximate the solution.</p>
+
+                <p>The implementation includes:</p>
+                <ul>
+                    <li>ODE function definition: <code>f(t, y) = 2t - y</code></li>
+                    <li>Euler method algorithm with iterative approximation</li>
+                    <li>Time grid setup and numerical solution calculation</li>
+                </ul>
+                
+                <p><strong>Complete Euler method implementation:</strong></p>
+                <pre><code id="euler-code">Loading code from euler_method.py...</code></pre>
+
+                <h2>3. Physics-Informed Neural Networks (PINNs)</h2>
+                <p style="text-align: justify;">So far, we've solved the ODE with SymPy (analytical) and Euler (numerical). Now, let's see how a Physics-Informed Neural Network (PINN) can approximate the same solution.</p>
+                
+                <p><strong>The key idea of PINNs:</strong></p>
+                <ul>
+                    <li>We don't give the network explicit training data for <em>y(t)</em></li>
+                    <li>Instead, we give it the physics of the problem:</li>
+                    <ul>
+                        <li>The ODE residual (how well the network prediction satisfies the differential equation)</li>
+                        <li>The initial condition (and boundary conditions if needed)</li>
+                    </ul>
+                </ul>
+                
+                <p style="text-align: justify;">This means we are asking the ML model:</p> 
+                
+                <p style="text-align: justify;"><em>"I don't know the exact form of y(t), but I know what its derivative looks like (dy/dt), and I know how it should behave at specific points (initial/bounday conditions). Please learn a function that satisfies these."</em></p>
+
+                <h3>Training Setup</h3>
+                <p style="text-align: justify;">We first prepare our training domain and initial condition, then define the PINN model with a simple neural network architecture.</p>
+
+                <h3>Loss Function</h3>
+                <p>We design the loss with two main components:</p>
+                <ol>
+                    <li><strong>Physics loss (ODE residual):</strong></li>
+                </ol>
+                <div class="math-equation">
+                    $$\mathcal{L}_{\text{phys}} = \left\| \frac{d\hat{y}}{dt} - (2t - \hat{y}) \right\|^2$$
+                </div>
+                <p>This enforces the ODE itself.</p>
+                <ol start="2">
+                    <li><strong>Initial condition loss:</strong></li>
+                </ol>
+                <div class="math-equation">
+                    $$\mathcal{L}_{\text{IC}} = \left( \hat{y}(0) - y(0) \right)^2$$
+                </div>
+                <p>This enforces the known starting value.</p>
+                
+                <p><strong>Total loss:</strong></p>
+                <div class="math-equation">
+                    $$\mathcal{L} = \mathcal{L}_{\text{phys}} + \mathcal{L}_{\text{IC}}$$
+                </div>
+
+                <p><strong>Complete PINN implementation:</strong></p>
+                <pre><code id="pinn-code">Loading code from pinn_solution.py...</code></pre>
+
+                <p style="text-align: justify;"><strong>Compared to Euler,</strong> the PINN is more flexible: it doesn't need explicit discretization of the ODE, and it "learns" the solution space directly from physics.</p>
+
+                <h2>Summary</h2>
+                <p style="text-align: justify;"><strong>Symbolic methods</strong> like SymPy are perfect when you need the exact, closed-form solution. They're mathematically rigorous but limited to equations that have analytical solutions.</p>
+
+                <p style="text-align: justify;"><strong>Numerical methods</strong> like Euler's are workhorses for practically any ODE, even when no closed-form solution exists. The trade-off is accuracy vs. computational cost, smaller step sizes give better accuracy but require more computation.</p>
+
+                <p style="text-align: justify;"><strong>PINNs</strong> represent a newer paradigm that combines the flexibility of neural networks with physics constraints. They're particularly powerful for complex geometries, unknown parameters, or when you have sparse data but strong physical knowledge.</p>
+
+            </div>
+
+            <div class="post-footer">
+                <a href="../blog.html" class="back-to-blog">← Back to Blog</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Mohammad H. Erfani. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Function to load and display Python code
+        async function loadPythonCode(filePath, elementId) {
+            try {
+                const response = await fetch(filePath);
+                if (response.ok) {
+                    const code = await response.text();
+                    document.getElementById(elementId).textContent = code;
+                } else {
+                    document.getElementById(elementId).textContent = 'Error loading ' + filePath;
+                }
+            } catch (error) {
+                document.getElementById(elementId).textContent = 'Error: Could not load ' + filePath;
+            }
+        }
+
+        // Load code when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadPythonCode('code/sympy_solution.py', 'sympy-code');
+            loadPythonCode('code/euler_method.py', 'euler-code');
+            loadPythonCode('code/pinn_solution.py', 'pinn-code');
+        });
+    </script>
+
+</body>
+</html>
