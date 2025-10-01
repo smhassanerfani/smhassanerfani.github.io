@@ -600,15 +600,16 @@ footer {
 
 /* Mathematical Equations */
 .math-equation {
-    /* background: #f8f9fa; */
-    /* border-left: 4px solid #0056b3; */
+    background: none;
+    border: none;
+    border-left: none;
+    border-radius: 0;
+    box-shadow: none;
     padding: 15px 20px;
     margin: 20px 0;
     text-align: center;
     font-size: 1.2em;
     font-family: 'Times New Roman', serif;
-    /* border-radius: 4px; */
-    /* box-shadow: 0 2px 4px rgba(0,0,0,0.1); */
 }
 
 .math-equation em {
