@@ -502,6 +502,7 @@ footer {
     line-height: 1.6;
     margin-bottom: 15px;
     color: #495057;
+    text-align: justify;
 }
 
 .read-more-btn {

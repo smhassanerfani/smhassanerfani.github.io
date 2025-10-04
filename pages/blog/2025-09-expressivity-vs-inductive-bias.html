@@ -43,41 +43,41 @@
                     <li><em>y</em> = {2, 4, 8, 12, 16, 20}</li>
                 </ul>
 
-                <p>
+                <p style="text-align: justify;">
                     It's immediately obvious that a linear function <em>y</em> = <em>ax</em> + <em>b</em> can easily fit this data with minimal effort for optimization and finding the coefficients. But what if we wanted to fit a quadratic function <em>y</em> = <em>ax</em><sup>2</sup> + <em>bx</em> + <em>c</em> to this same dataset?
                 </p>
 
-                <p>
+                <p style="text-align: justify;">
                     The first question is: <strong>can we?</strong> We definitely can, as the quadratic model has higher expressivity. In other words, <strong>the quadratic function represents a larger hypothesis space that encompasses all possible linear relationships plus non-linear ones</strong>. Any pattern that a linear model can capture, a quadratic model can also represent.
                 </p>
 
-                <p>
+                <p style="text-align: justify;">
                     But what's the caveat? The caveat is that for the quadratic formula, we have to optimize 3 parameters instead of 2 (compared to the linear formula), and depending on the optimization method, the quadratic model might need more data to be properly optimized and avoid overfitting.
                 </p>
 
-                <p>
+                <p style="text-align: justify;">
                     Thus, the quadratic formula can definitely explain our data, but <strong>at the cost of more complex optimization</strong>. This is generally how machine learning works in reality: <strong>ML models normally have much higher expressivity compared to the complexity of our underlying data patterns</strong>. In our analogy, even if our data follows a simple linear relationship (degree 1), we typically fit high-degree polynomials <em>y</em> = <em>a</em><sub>n</sub><em>x</em><sup>n</sup> + <em>a</em><sub>n-1</sub><em>x</em><sup>n-1</sup> + ... + <em>a</em><sub>1</sub><em>x</em> + <em>c</em>, regardless of the true degree of our data. This over-parameterization is common because we rarely know the true complexity of our data patterns beforehand.
                 </p>
 
-                <p>
+                <p style="text-align: justify;">
                     These expressive models can generally explain our data, but the success depends on how we configure our experimental setup, adjust our hyperparameters, and—critically—<strong>the amount of data we have</strong>.
                 </p>
 
-                <p>
+                <p style="text-align: justify;">
                     <strong>The more data we have, the more expressive model we can afford to use.</strong> As you can see, the computational cost is related to how large our models are, and it's somewhat independent of how simple or linear our underlying data patterns are. That's why the training procedure is affected more by model complexity than by data simplicity.
                 </p>
 
                 <h2>The Role of Inductive Bias</h2>
-                <p>
+                <p style="text-align: justify;">
                     Now, what if we have limited data, and we know our relationship is linear? In this case, choosing the linear function makes sense. In this analogy, <strong>the linear model is more efficient for optimization but carries a very strong pre-assumption: that the data follows a linear relationship</strong>.
                 </p>
 
-                <p>
+                <p style="text-align: justify;">
                     Models that have such built-in assumptions are said to have <strong>inductive bias</strong>. Inductive bias makes training faster and helps models converge sooner, <strong>but it comes with the risk that if our assumptions are wrong, the model may be too constrained to capture the true underlying patterns</strong>.
                 </p>
 
                 <h2>Real-World Example: CNNs vs. Vision Transformers</h2>
-                <p>
+                <p style="text-align: justify;">
                     This trade-off is beautifully illustrated in the evolution from Convolutional Neural Networks (CNNs) to Vision Transformers (ViTs) in computer vision:
                 </p>
 
@@ -99,36 +99,36 @@
                     <li>More flexible but require larger datasets</li>
                 </ul>
 
-                <p>
+                <p style="text-align: justify;">
                     When data is limited, CNNs often outperform ViTs because their inductive biases act as helpful constraints. However, with massive datasets (like ImageNet-21K), ViTs can learn the "right" spatial relationships from data and often surpass CNNs because they're not constrained by potentially incorrect assumptions.
                 </p>
 
                 <h2>Beyond the Trade-off: Combining Both Advantages</h2>
-                <p>
+                <p style="text-align: justify;">
                     It's important to note that <strong>expressivity and inductive bias are not necessarily mutually exclusive</strong>. Modern machine learning increasingly focuses on architectures that combine high expressivity with carefully designed inductive biases, giving us the best of both worlds.
                 </p>
 
-                <p>
+                <p style="text-align: justify;">
                     Consider these examples:
                 </p>
 
-                <p>
+                <p style="text-align: justify;">
                     <strong>Hybrid CNN-Transformer Architectures:</strong> Models like ConViT and CvT combine convolutional layers (with strong spatial inductive bias) with transformer blocks (high expressivity). They start with CNN-like processing to leverage spatial assumptions, then use transformers for more flexible global reasoning.
                 </p>
 
-                <p>
+                <p style="text-align: justify;">
                     <strong>Graph Neural Networks (GNNs):</strong> These models have strong inductive bias for graph-structured data (assuming relationships matter) while maintaining high expressivity through multiple layers and attention mechanisms. They can model complex relationships while respecting the underlying graph structure.
                 </p>
 
-                <p>
+                <p style="text-align: justify;">
                     <strong>Physics-Informed Neural Networks (PINNs):</strong> These combine the expressivity of deep networks with the inductive bias of physical laws. The model can learn complex patterns while being constrained to respect known physics, leading to better generalization with less data.
                 </p>
 
-                <p>
+                <p style="text-align: justify;">
                     <strong>Regularization Techniques:</strong> Methods like dropout, batch normalization, and data augmentation add inductive biases to highly expressive models without reducing their theoretical capacity. They guide the model toward better solutions while maintaining flexibility.
                 </p>
 
-                <p>
+                <p style="text-align: justify;">
                     The key insight is that <strong>smart architectural choices can embed useful inductive biases into highly expressive models</strong>, allowing us to benefit from both fast convergence and strong generalization without sacrificing the ability to capture complex patterns when needed.
                 </p>
 
