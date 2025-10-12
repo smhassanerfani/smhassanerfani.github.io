@@ -27,9 +27,16 @@
     document.addEventListener('click', function(e){
       const a = e.target.closest && e.target.closest('.post-tags a.tag');
       if(!a) return;
-  // only handle links to the conferences folder (match with or without leading slash)
-  const href = a.getAttribute('href');
-  if(!href || (!href.includes('/conferences/') && !href.includes('conferences/'))) return;
+      // only handle links to the conferences folder (match with or without leading slash)
+      const href = a.getAttribute('href');
+      if(!href || (!href.includes('/conferences/') && !href.includes('conferences/'))) return;
+
+      // Only intercept HTML pages (so images, PDFs, etc. open in a new tab normally)
+      const isHtml = !!href.match(/\.html?(?:$|[?#])/i);
+      if(!isHtml) {
+        // don't prevent default — let target="_blank" open the resource
+        return;
+      }
 
       e.preventDefault();
       body.textContent = 'Loading…';
