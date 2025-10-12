@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Abstract — Estimating Daily Surface Soil Moisture Using Temporal Graph Neural Networks and SMAP Data on a Global Grid Scale</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <main style="max-width:800px;margin:3rem auto;padding:1rem;">
+    <h2>Abstract</h2>
+    <p>
+      Surface soil moisture (SSM) serves as a source of water for the atmosphere through processes leading to evapotranspiration from land. Moreover, SSM impacts climate processes by influencing the partitioning of incoming energy fluxes and controlling the distribution of precipitation into runoff, evapotranspiration, and infiltration. Land Surface Models (LSMs) such as Noah and VIC have generally been used to model these processes. However, recent studies have demonstrated the potential of machine learning techniques in hydrological modeling tasks. Among these techniques, Long Short-Term Memory (LSTM) networks have gained popularity for their effectiveness in lumped modeling. In the context of soil moisture, LSTM models typically train on a single grid data, assuming negligible Darcy flux in the horizontal direction. Despite their success, LSTMs lack the inductive bias to capture spatial dependencies, which are required for long-term predictions where lateral fluxes become more significant. To address this limitation, specific neural network operations such as Graph Convolutional Networks (GCNs) or Convolutional Neural Networks (CNNs) need to be incorporated into the LSTM architecture. Temporal GCNs offer a promising solution for modeling gridded data. TGCNs effectively parametrize Darcy fluxes in both horizontal and vertical directions simultaneously at each time step. This capability makes TGCNs a better fit for simulating gridded soil moisture data, providing a more accurate and comprehensive representation of soil moisture dynamics. In this study, the SMAP Enhanced L3 Radiometer Global and Polar Grid Daily 9 km EASE-Grid Soil Moisture, Version 5 (SPL3SMP_E) was used as the target variable, while ECMWF Reanalysis v5 (ERA5) atmospheric forcings (e.g., temperature, radiation, relative humidity), along with static terrain attributes including NLDAS Soils Datasets, NLDAS Vegetation Class Datasets, Digital Elevation Model, and National Land Cover Database (NLCD), were used as input variables. Results show that while LSTM models generally perform well, TGCNs outperform LSTM models in areas where soil textures exhibit good drainage and poor moisture retention, such as sandy loam.
+    </p>
+
+  </main>
+</body>
+</html>

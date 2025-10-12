@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Abstract — Spatio-Temporal Machine Learning Models for Emulation of Global Atmospheric Composition</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <main style="max-width:800px;margin:3rem auto;padding:1rem;">
+    <h2>Abstract</h2>
+    <p>
+      Interactive atmospheric composition simulations are among the most computationally expensive components in Earth System Models (ESMs) due to the need to transport a large number of gaseous and aerosol tracers at every model time step. This poses a significant limitation for higher-resolution transient climate simulations with current computational resources. In ESMs such as NASA GISS-E2.1 (hereafter referred to as ModelE), pre-computed monthly-averaged atmospheric composition concentrations are often used to reduce computational expenses. This approach is referred to as Non-Interactive Tracers (NINT). In this study, we extend the NINT version of the ModelE using machine learning to emulate the effects of interactive emissions on climate forcing. We use data from a fully interactive composition climate model with surface-driven emissions to develop an ML-based NINT climate model. This version accounts for instantaneous atmospheric conditions, enabling the tracers to respond dynamically to meteorology without the need for explicit calculation of tracer transport. This approach could be applied to any aerosol species and integrated into ESMs to simulate aerosol concentrations interactively. The proposed framework emulates the advection term at the surface pressure level, with a focus on predicting surface-level concentrations of Black Carbon (BC) from biomass burning, which is a contributor to elevated levels of PM2.5 concentrations. Two consecutive years of ModelE simulated data were used as training data. To capture both temporal and spatial dependencies, a Convolutional Long Short-Term Memory (ConvLSTM) model was used. Results show the ConvLSTM achieved an average R-squared of 0.85 (STD = 0.08) on the test set. In contrast, using monthly-averaged atmospheric composition concentrations resulted in an average R-squared of 0.42 (STD = 0.73) for the same period.
+    </p>
+
+  </main>
+</body>
+</html>
