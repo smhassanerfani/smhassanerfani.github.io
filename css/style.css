@@ -187,31 +187,65 @@ code {
     margin-top: 2px;
 }
 
+/* ======================================================= */
+/* PARENT CONTAINER */
+/* ======================================================= */
 .contact-social {
     margin-left: 15px;
     display: flex;
-    gap: 8px;
+    gap: 8px; /* Handles spacing between links */
     margin-top: 2px;
 }
 
+/* ======================================================= */
+/* GENERIC LINK STYLING (Applies to all social links) */
+/* ======================================================= */
 .contact-social a {
     font-size: 0.9em;
     text-decoration: none;
+    
+    /* COMBINED TRANSITION for all effects (scale and color) */
     transition: transform 0.2s ease, background-color 0.2s ease;
+    
+    /* Use flexbox properties for perfect centering */
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    
     width: 28px;
     height: 28px;
     border-radius: 4px;
     font-weight: bold;
-    color: white;
+    color: white; /* Default text/icon color for all social links */
 }
 
 .contact-social a:hover {
-    transform: scale(1.1);
+    transform: scale(1.1); /* Hover transform for all links */
 }
 
+
+/* ======================================================= */
+/* GITHUB ICON STYLING */
+/* ======================================================= */
+.contact-social .github-icon {
+    /* Only define unique styles (background color) here. 
+       Generic sizing/display/transition is handled by .contact-social a */
+    background-color: #333; /* Dark background color */
+}
+
+.github-icon i {
+    /* Use font-size to control the size of the icon */
+    font-size: 16px; 
+    /* No need for line-height due to display: inline-flex on parent */
+}
+
+.contact-social .github-icon:hover {
+    background-color: #6e5494; /* GitHub's brand purple on hover */
+}
+
+/* ======================================================= */
+/* INDIVIDUAL BRAND STYLING */
+/* ======================================================= */
 .contact-social a.linkedin {
     background-color: #0077b5;
 }
@@ -231,7 +265,7 @@ code {
 
 .contact-social a.researchgate {
     background-color: #00ccbb;
-    font-size: 0.8em;
+    font-size: 0.8em; /* Overriding the generic font-size */
 }
 
 .contact-social a.researchgate:hover {
