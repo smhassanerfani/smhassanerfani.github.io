@@ -75,9 +75,9 @@
                 <h2>2. Numerical Solution with the Euler Method</h2>
                 <p>The Euler method is one of the simplest numerical solvers for ODEs. It uses the iterative formula:</p>
                 <div class="math-equation">
-                    $$y_{i+1} = y_i + h \cdot f(t_i, y_i)$$
+                    $$y_{i+1} = y_i + h \cdot \left. \frac{dy}{dt} \right|_{t_i, y_i}$$
                 </div>
-                <p>where <em>h</em> is the time step.</p>
+                <p>where <em>h</em> is the time step and $\frac{dy}{dt} = f(t, y)$.</p>
 
                 <p style="text-align: justify;"><strong>Think about it:</strong> instead of solving the entire equation, we just "walk along the slope" (gradient) at each step. It's like saying: <em>I don't know the full path, but I can guess the next step if I know the slope right here.</em></p>
 
