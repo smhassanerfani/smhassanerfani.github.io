@@ -164,8 +164,32 @@
                     I believe this is a good place to wrap up the first part of this article. In the next piece, we will work on how to define prognostics and diagnostics in MLWP, building upon our broad understanding of the ingredients of both NWP and MLWP.
                 </p>
             </div>
+            <div class="post-footer">
+                <a href="../blog.html" class="back-to-blog">← Back to Blog</a>
+            </div>
         </article>
     </main>
+
+    <footer>
+        <p>&copy; 2025 Mohammad H. Erfani. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Function to load and display Python code
+        async function loadPythonCode(filePath, elementId) {
+            try {
+                const response = await fetch(filePath);
+                if (response.ok) {
+                    const code = await response.text();
+                    document.getElementById(elementId).textContent = code;
+                } else {
+                    document.getElementById(elementId).textContent = 'Error loading ' + filePath;
+                }
+            } catch (error) {
+                document.getElementById(elementId).textContent = 'Error: Could not load ' + filePath;
+            }
+        }
+    </script>
 
 </body>
 </html>
