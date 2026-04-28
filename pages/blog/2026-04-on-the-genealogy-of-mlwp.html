@@ -43,91 +43,94 @@
             </header>
 
             <div class="post-content">
-                <p>
+                <p class="lead">
+                    Exploring the foundations of numerical weather prediction and how machine learning can serve as effective surrogates, emphasizing the need to balance physical constraints with data-driven approaches for principled surrogate modeling.
+                </p>
+                <p style="text-align: justify;">
                     Traditionally, physics has been responsible for explaining the Earth as a system. Fundamental physical laws, such as Newton's Second Law of Motion and the First Law of Thermodynamics, govern the evolution of the atmosphere. These laws are converted into the mathematical equations that form the core of what we call numerical weather prediction (NWP).
                 </p>
 
-                <p>
+                <p style="text-align: justify;">
                     Physics has been so dominant over the past few decades that, even as we pivot toward machine learning (ML) surrogates, we often use ML merely as a mimic for traditional numerical solvers. However, we must not forget that the goal is to surrogate this physics with a data-driven approach. Consequently, the unique characteristics of data and the established best practices of data science should be considered within this new paradigm. We need to reconcile physical laws with the broader conventions of machine learning and data-driven methodologies. This article explores how respecting ML conventions alongside physics laws can help us avoid the common pitfalls of surrogate modeling.
                 </p>
 
-                <p>
+                <p style="text-align: justify;">
                     In MLWP, we aim to replace traditional NWP with machine learning. This problem has two vital aspects: first, we must deeply understand the characteristics of NWP, its core components and how it is solved. Second, we must select the appropriate ML components (modules) capable of capturing the inherent physical characteristics of the task, which is crucial for model performance.
                 </p>
 
-                <p>
+                <p style="text-align: justify;">
                     To achieve this, we will construct our own narrative regarding NWP. This does not mean we will distort facts or alter the truth; rather, we are shifting our perspective to an angle that serves our ultimate objective: effectively surrogating physical systems with machine learning. By framing NWP through the lens of numerical integration schemes, as well as prognostic and diagnostic interplay, we can better identify which physical constraints are essential to preserve and which aspects of the system are best suited for data-driven approximation.
                 </p>
 
                 <h2>Numerical Weather Prediction</h2>
 
                 <blockquote>
-                    <p><strong>Disclaimer:</strong> The following content provides a simplified conceptual overview of Numerical Weather Prediction (NWP) to facilitate a discussion on machine learning surrogates. While the mathematical narrative is "fair enough" for a high-level perspective, some technical nuances have been simplified for the sake of clarity.</p>
+                    <p style="text-align: justify;"><strong>Disclaimer:</strong> The following content provides a simplified conceptual overview of Numerical Weather Prediction (NWP) to facilitate a discussion on machine learning surrogates. While the mathematical narrative is "fair enough" for a high-level perspective, some technical nuances have been simplified for the sake of clarity.</p>
                 </blockquote>
 
-                <p>
+                <p style="text-align: justify;">
                     Vilhelm Bjerknes first recognized that numerical weather prediction was possible in principle in 1904. He proposed that weather prediction could be viewed as an <strong>initial value problem</strong> in mathematics: since physical laws govern how meteorological variables evolve over time, if we possess an accurate representation of the atmosphere's initial state, we can numerically integrate these governing equations forward in time to generate a forecast.
                 </p>
 
-                <p>
+                <p style="text-align: justify;">
                     At its core, NWP involves solving a set of partial differential equations, commonly referred to as the <strong>Primitive Equations</strong>. These equations are designed to resolve six fundamental resolved variables: three-dimensional wind velocity components ($u, v, \omega$), temperature ($T$), moisture ($q$), and geopotential height ($z$).
                 </p>
 
                 <h3>The Primitive Equations</h3>
-                <p>
+                <p style="text-align: justify;">
                     The following system serves as the foundational framework for atmospheric motion and thermodynamics:
                 </p>
 
                 <h4>Wind Forecast Equations</h4>
 
-                <p><strong>1a.</strong> $$\frac{\partial u}{\partial t} = - u \frac{\partial u}{\partial x} - v \frac{\partial u}{\partial y} - \omega \frac{\partial u}{\partial p} + fv - g \frac{\partial z}{\partial x} + F_x$$</p>
+                <p style="text-align: justify;"><strong>1a.</strong> $$\frac{\partial u}{\partial t} = - u \frac{\partial u}{\partial x} - v \frac{\partial u}{\partial y} - \omega \frac{\partial u}{\partial p} + fv - g \frac{\partial z}{\partial x} + F_x$$</p>
 
-                <p><strong>1b.</strong> $$\frac{\partial v}{\partial t} = - u \frac{\partial v}{\partial x} - v \frac{\partial v}{\partial y} - \omega \frac{\partial v}{\partial p} - fu - g \frac{\partial z}{\partial y} + F_y$$</p>
+                <p style="text-align: justify;"><strong>1b.</strong> $$\frac{\partial v}{\partial t} = - u \frac{\partial v}{\partial x} - v \frac{\partial v}{\partial y} - \omega \frac{\partial v}{\partial p} - fu - g \frac{\partial z}{\partial y} + F_y$$</p>
 
                 <h4>Continuity Equation</h4>
 
-                <p><strong>2.</strong> $$\frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} + \frac{\partial \omega}{\partial p} = 0$$</p>
+                <p style="text-align: justify;"><strong>2.</strong> $$\frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} + \frac{\partial \omega}{\partial p} = 0$$</p>
 
                 <h4>Temperature Forecast Equation</h4>
 
-                <p><strong>3.</strong> $$\frac{\partial T}{\partial t} = - u \frac{\partial T}{\partial x} - v \frac{\partial T}{\partial y} - \omega \left( \frac{\partial T}{\partial p} - \frac{RT}{c_p p} \right) + \frac{H}{c_p}$$</p>
+                <p style="text-align: justify;"><strong>3.</strong> $$\frac{\partial T}{\partial t} = - u \frac{\partial T}{\partial x} - v \frac{\partial T}{\partial y} - \omega \left( \frac{\partial T}{\partial p} - \frac{RT}{c_p p} \right) + \frac{H}{c_p}$$</p>
 
                 <h4>Moisture Forecast Equation</h4>
 
-                <p><strong>4.</strong> $$\frac{\partial q}{\partial t} = - u \frac{\partial q}{\partial x} - v \frac{\partial q}{\partial y} - \omega \frac{\partial q}{\partial p} + E - P$$</p>
+                <p style="text-align: justify;"><strong>4.</strong> $$\frac{\partial q}{\partial t} = - u \frac{\partial q}{\partial x} - v \frac{\partial q}{\partial y} - \omega \frac{\partial q}{\partial p} + E - P$$</p>
 
                 <h4>Hydrostatic Equation</h4>
 
-                <p><strong>5.</strong> $$\frac{\partial z}{\partial p} = - \frac{RT}{pg}$$</p>
+                <p style="text-align: justify;"><strong>5.</strong> $$\frac{\partial z}{\partial p} = - \frac{RT}{pg}$$</p>
 
-                <p><em>Source: MetEd course: Impact of Model Structure and Dynamics</em></p>
+                <p style="text-align: justify;"><em>Source: MetEd course: Impact of Model Structure and Dynamics</em></p>
 
                 <h3>From Theory to Numerical Integration</h3>
-                <p>
+                <p style="text-align: justify;">
                     Because these non-linear partial differential equations do not possess closed-form analytical solutions, we must rely on numerical schemes to solve them. In practice, solving these equations is a process of discrete integration over time and space. To complete our narrative, we can represent the essence of this integration using a simple <strong>Euler forward scheme</strong>.
                 </p>
 
-                <p>
+                <p style="text-align: justify;">
                     If $\psi$ represents any of our resolved variables, the state at time $t + \Delta t$ can be approximated by the current state and its time tendency:
                 </p>
 
-                <p>$$\psi(t + \Delta t) \approx \psi(t) + \left( \frac{\partial \psi}{\partial t} \right) \Delta t$$</p>
+                <p style="text-align: justify;">$$\psi(t + \Delta t) \approx \psi(t) + \left( \frac{\partial \psi}{\partial t} \right) \Delta t$$</p>
 
-                <p>
+                <p style="text-align: justify;">
                     In this framework, the "model" acts as an engine that calculates the tendency term ($\frac{\partial \psi}{\partial t}$) using the physical laws shown above, then iteratively updates the state of the atmosphere.
                 </p>
 
                 <h3>Physical Processes</h3>
-                <p>
+                <p style="text-align: justify;">
                     In our set of "sacred" equations, some variables, specifically $F_x, F_y, H, E,$ and $P$, represent physical processes that impact our primary variables. These processes are inherently complex; they often involve scales far smaller than the grid spacing of the model (such as individual convective clouds) or rely on physical mechanisms (like radiation transfer) that are too computationally expensive to resolve from first principles.
                 </p>
 
-                <p>
+                <p style="text-align: justify;">
                     Because we cannot calculate these effects directly within the core equations, we must estimate them using empirical approximations. In numerical modeling, this technical estimation process is known as <strong>parameterization</strong>. The accuracy of an NWP forecast is fundamentally linked to how well these parameterizations mimic reality.
                 </p>
 
                 <h3>Prognostics vs. Diagnostics</h3>
-                <p>
+                <p style="text-align: justify;">
                     We must distinguish between two types of variables in our NWP system:
                 </p>
 
@@ -136,31 +139,31 @@
                     <li><strong>Diagnostic Variables ($\omega, z$):</strong> These are derived directly from the prognostic variables at any given time step, rather than being solved via time-tendency equations (the Continuity and Hydrostatic equations).</li>
                 </ul>
 
-                <p>
+                <p style="text-align: justify;">
                     For simplicity and to improve the coherence of the narrative, we categorize all variables parameterized in the physical processes ($F_x, F_y, H, E, P$) as diagnostics, since they share the defining characteristics of diagnostic variables; i.e., they are calculated from the current prognostic state, even though they influence the future state.
                 </p>
 
                 <h2>Machine Learning</h2>
 
                 <blockquote>
-                    <p><strong>Disclaimer:</strong> The data-driven landscape is more amorphous than traditional physics, defined largely by experimental conventions and evolving best practices. While standard ML taxonomy categorizes tasks into supervised (classification/regression) and unsupervised (clustering/dimensionality reduction) methods, we will adopt a customized framework to better align with our goal of surrogate modeling. We define our analysis through two primary lenses:</p>
+                    <p style="text-align: justify;"><strong>Disclaimer:</strong> The data-driven landscape is more amorphous than traditional physics, defined largely by experimental conventions and evolving best practices. While standard ML taxonomy categorizes tasks into supervised (classification/regression) and unsupervised (clustering/dimensionality reduction) methods, we will adopt a customized framework to better align with our goal of surrogate modeling. We define our analysis through two primary lenses:</p>
                 </blockquote>
 
                 <h3>Time-Series Analysis (Forecasting)</h3>
-                <p>
+                <p style="text-align: justify;">
                     In this context, we define forecasting as estimating future states based on the history of a time series. The defining characteristic is the <strong>temporal anchor</strong>. We rely on the autocorrelation of the system—the principle that the state at time $t$ fundamentally influences the state at $t+1$. The objective is to project the known trajectory of the atmosphere forward into an unknown future, maintaining the continuity of the system's evolution.
                 </p>
 
                 <h3>Regression Analysis (Prediction)</h3>
-                <p>
+                <p style="text-align: justify;">
                     We define prediction as the estimation of a target variable $Y$ based on a given feature set $X$. At its core, this is a functional mapping: $f(X) \to Y$. Unlike time-series analysis, regression often treats data points as independent observations within a feature space, without an inherent requirement that the target must exist in the future. We are essentially performing interpolation or extrapolation within the feature space, and the goal is to learn a mapping function rather than project a temporal trajectory.
                 </p>
 
-                <p>
+                <p style="text-align: justify;">
                     By distinguishing between <strong>forecasting</strong> (projecting the trajectory forward via temporal correlation) and <strong>prediction</strong> (mapping inputs to outputs within a state space), we can better classify which components of the NWP system belong to which ML approach. This is the crux of our "principled trade-off": knowing whether our surrogate should be acting as a time-evolving forecaster or a diagnostic predictor.
                 </p>
 
-                <p>
+                <p style="text-align: justify;">
                     I believe this is a good place to wrap up the first part of this article. In the next piece, we will work on how to define prognostics and diagnostics in MLWP, building upon our broad understanding of the ingredients of both NWP and MLWP.
                 </p>
             </div>
