@@ -30,7 +30,7 @@ Finally, we look at who built today’s ML‑weather models, why they ended up l
 ## Numerical Weather Prediction
 The following overview is intentionally schematic. Its purpose is not to reproduce the full complexity of operational NWP, but to isolate the parts of the system that matter for the surrogate-modeling argument.
 
-Vilhelm Bjerknes first recognized that numerical weather prediction was possible in principle in 1904. He proposed that weather prediction could be viewed as an **initial value problem** in mathematics: since physical laws govern how meteorological variables evolve over time, if we possess an accurate representation of the atmosphere’s initial state, we can numerically integrate these governing equations forward in time to generate a forecast.
+Vilhelm Bjerknes first recognized that numerical weather prediction was possible in principle in 1904. He proposed that weather prediction could be viewed as an **initial value problem (IVT)** in mathematics: since physical laws govern how meteorological variables evolve over time, if we possess an accurate representation of the atmosphere’s initial state, we can numerically integrate these governing equations forward in time to generate a forecast.
 
 At its core, NWP involves solving a set of partial differential equations, commonly referred to as the **Primitive Equations**. These equations are designed to resolve six fundamental resolved variables: three-dimensional wind velocity components ($u, v, \omega$), temperature ($T$), moisture ($q$), and geopotential height ($z$).
 
@@ -62,27 +62,37 @@ The following system serves as the foundational framework for atmospheric motion
 *Source: MetEd course: Impact of Model Structure and Dynamics*
 
 <!-- ### From Theory to Numerical Integration -->
-Because these non-linear partial differential equations do not possess closed-form analytical solutions, we must rely on numerical schemes to solve them. In practice, solving these equations is a process of discrete integration over time and space. To complete our narrative, we can represent the essence of this integration using a simple **Euler forward scheme**.
+Because these non-linear partial differential equations do not possess closed-form analytical solutions, we must rely on numerical schemes to solve them. In practice, solving these equations is a process of discrete integration over time and space. We can represent the essence of this integration using a simple **Euler forward scheme**.
 
 If $\psi$ represents any of our resolved variables, the state at time $t + \Delta t$ can be approximated by the current state and its time tendency:
 
 $$\psi(t + \Delta t) \approx \psi(t) + \left( \frac{\partial \psi}{\partial t} \right) \Delta t$$
 
-In this framework, the "model" acts as an engine that calculates the tendency term ($\frac{\partial \psi}{\partial t}$) using the physical laws shown above, then iteratively updates the state of the atmosphere.
+In this framework, the "model" acts as an engine that calculates the tendency term ($\frac{\partial \psi}{\partial t}$) using the physical laws shown above, then iteratively updates the state of the atmosphere. This time-stepping structure strongly influenced the dominant formulation of MLWP. A learned model of the form
 
-This time-stepping view is the root of why autoregressive MLWP feels natural. A learned model that maps $X_t$ to $X_{t+\Delta t}$ is behaving like a numerical integrator: it repeatedly applies a transition operator to move the atmospheric state forward. The important question is therefore not whether autoregression is valid in MLWP. For prognostic state evolution, It intuitively is, but quesiton is if it's a right solution why it is not converge yet, why it's very unstable, it might work in medium range weather settings but for climate or longer applications it is totally unstable.
+$$
+X_{t+\Delta t} = \mathcal{M}_{\theta}(X_t)
+$$
+
+behaves analogously to a learned numerical integrator: it repeatedly applies a transition operator to evolve the atmospheric state.
+
+The important point is not that autoregression is incorrect. For evolving prognostic states, autoregression is often physically justified. The deeper issue is genealogical:
+
+> MLWP inherited this rollout structure from numerical integration before asking whether the statistical structure of the data alone would naturally suggest the same formulation.
 
 ### Physical Processes
-In our set of "sacred" equations, some variables—specifically $F_x, F_y, H, E,$ and $P$—represent physical processes that impact our primary variables. These processes are inherently complex; they often involve scales far smaller than the grid spacing of the model (such as individual convective clouds) or rely on physical mechanisms (like radiation transfer) that are too computationally expensive to resolve from first principles.
+In the set of NWP equations, some variables, specifically $F_x, F_y, H, E,$ and $P$, represent physical processes that impact our primary variables. These processes are inherently complex; they often involve scales far smaller than the grid spacing of the model (such as individual convective clouds) or rely on physical mechanisms (like radiation transfer) that are too computationally expensive to resolve from first principles.
 
 Because we cannot calculate these effects directly within the core equations, we must estimate them using empirical approximations. In numerical modeling, this technical estimation process is known as **parameterization**. The accuracy of an NWP forecast is fundamentally linked to how well these parameterizations mimic reality.
 
-For surrogate modeling, parameterizations are especially important because they already occupy a hybrid position between physics and empiricism. They are not usually advanced as independent atmospheric states. They are evaluated from the current model state, possibly with additional assumptions, constants, or internal closure variables, and then inserted into the tendency equations. thus in one view they can be considered as dependent variables of those calculated in each atmospheric state. in other words, if we assume six fundamental resolved variables as the main ingredients, all other subprocesses are cooked using these ingredients, with differnet recipes and some different flavors. but why we need to know this, it is thing that should be sent to our other realm (data driven) where we talk about dependent/target independent/predictors variables. this play role in defining target and corresponding independent variables in the problem. so that's a good time to define another important terms in NWP. prognostics vs diagnostics:
+For surrogate‑modeling purposes, parameterizations are especially notable because they already sit at the intersection of physics and empiricism. They are not independent atmospheric states; rather, they are evaluated from the current model state often using additional constants, closure assumptions, or internal variables and then inserted into the tendency equations. In this sense they can be viewed as dependent variables that are functions of the resolved variables. Recognizing parameterizations as functions of the resolved state clarifies the mapping between predictor variables (the "prognostic" fields that the model directly resolves) and predictand variables (the tendencies, "diagnostics," or closure terms produced by the parameterizations). 
 
-* **Prognostic Variables ($u, v, T, q$):** These are our "state" variables. We determine their future values by solving the time-dependent equations (the Wind, Temperature, and Moisture Forecast equations).
-* **Diagnostic Variables ($\omega, z$):** These are derived directly from the prognostic variables at any given time step, rather than being solved via time-tendency equations (the Continuity and Hydrostatic equations).
+This observation opens a new perspective for the article: the distinction between prognostic and diagnostic variables. A critical difference in physical modeling lies in how these two types of quantities are treated.
 
-here after and for simplicity we also categoraize all variables calculated in parameterized physical processes ($F_x, F_y, H, E, P$) as diagnostic or closure operators. they share the defining characteristics of diagnostic variables; i.e., they are calculated from the current prognostic state. This does not mean they are always algebraic diagnostics in the strict dynamical-systems sense. Some closures may include memory, stochasticity, or their own internal state. The key point is narrower: unless a quantity has its own prognostic evolution equation in the model formulation, it should not automatically be promoted to an independent autoregressive forecast variable.
+* **Prognostic Variables ($u, v, T, q$):** These are our "state" variables. These variables possess explicit time-evolution equations. Their future values are obtained through numerical integration.
+* **Diagnostic Variables ($\omega, z$):** Diagnostic variables occupy a different role. Rather than evolving independently through explicit time derivatives, they are evaluated from the current atmospheric state, i.e., they are derived directly from the prognostic variables at any given time step.
+
+For simplicity we also categorize all quantities produced by parameterized physical processes as diagnostic or closure operators. Like other diagnostics, they are calculated from the current prognostic state. But this does not imply that they are always purely algebraic; some closures may incorporate memory, stochastic components, or internal state variables.
 
 ## Machine Learning
 
