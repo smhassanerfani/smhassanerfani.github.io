@@ -92,14 +92,55 @@ This observation opens a new perspective for the article: the distinction betwee
 * **Prognostic Variables ($u, v, T, q$):** These are our "state" variables. These variables possess explicit time-evolution equations. Their future values are obtained through numerical integration.
 * **Diagnostic Variables ($\omega, z$):** Diagnostic variables occupy a different role. Rather than evolving independently through explicit time derivatives, they are evaluated from the current atmospheric state, i.e., they are derived directly from the prognostic variables at any given time step.
 
-For simplicity we also categorize all quantities produced by parameterized physical processes as diagnostic or closure operators. Like other diagnostics, they are calculated from the current prognostic state. But this does not imply that they are always purely algebraic; some closures may incorporate memory, stochastic components, or internal state variables.
+For simplicity we also categorize all quantities produced by parameterized physical processes as diagnostic or closure operators. Like other diagnostics, they are calculated from the current prognostic state. But this does not imply that they are always purely algebraic; some closures may incorporate memory, stochastic components, or internal state variables. 
+better understanding of prognostics and diagnostics and their characteristics can help us to better define prediction task in ML side. 
 
 ## Machine Learning
+> **Disclaimer:** The data-driven landscape is more amorphous than traditional physics, defined largely by experimental conventions and evolving best practices. The ML terminology in this article is pragmatic rather than taxonomic. we choose terms in a way that help us better make our cases and help reader to easier follow what we are talking about and facilitate communiting between two realms (physics and data-driven)
 
-**Disclaimer:** The data-driven landscape is more amorphous than traditional physics, defined largely by experimental conventions and evolving best practices. The ML terminology in this article is pragmatic rather than taxonomic. we choose terms in a way that help us better make our cases and help reader to easier follow what we are talking about and facilitate communiting between two realms (physics and data-driven)
+Choosing the right machine learning model requires a systematic approach that balances problem type, data characteristics, and practical constraints. Given what has been discussed in the previous sections, MLWP—whether at the dynamical core level or for specific physical processes—is generally framed as a **supervised learning** and **regression** problem. However, the ML literature often uses the word *prediction* broadly, which can obscure an important distinction relevant to MLWP.
 
-### Defining ML task for MLWP
-Choosing the best machine learning model requires a systematic approach that balances problem type, data characteristics, and practical constraints. Regarding the problem type, given what has been discussed in the previous section, MLWP is categorized as a supervised learning, and a regression problem. scikit learn documentation can give a very good holistic veiw about different type of ML problems and their variants. but the second important aspect is important aspect about the data characteristics is to understand its dependency whether in time or space. simply we can say MLWP data is spatiotemporal, ie having dependency on both time and space domains. so based on these we can define the task for ML. 
+This article therefore distinguishes between:
+
+1. **Evolution operator learning**
+2. **State-conditioned operator evaluation**
+
+### Evolution Operator Learning
+Evolution operator learning concerns estimating the future state of a dynamical system. This can take the form of a transition operator,
+
+$$X_{t+\Delta t} = \mathcal{M}_{\theta}(X_t),$$
+
+or a tendency operator,
+
+$$X_{t+\Delta t} = X_t + \Delta t\,\mathcal{F}_{\theta}(X_t),\qquad \frac{dX}{dt} = \mathcal{F}_{\theta}(X_t)$$
+
+Both formulations can be deployed autoregressively, since the output updates the evolving state. In other words, the model approximates either the transition or the tendency operator of a dynamical system. 
+
+This framing is not exclusive to the physical sciences. Hydrological time series forecasting, for example, applies the same principle, using statistical and machine learning methods to predict streamflow, rainfall, and groundwater levels from sequentially measured records. This does not imply that the variable is purely dependent on its own past values, but this approach is adopted pragmatically, justified by two key arguments: (1) understanding the variability of hydrological processes is inherently difficult due to their complex and stochastic nature, making explicit driver-based modeling challenging; and (2) the target variable carries implicit correlations with its physical drivers, since those drivers are themselves autocorrelated in time, i.e., past precipitation, soil moisture, and temperature leave detectable signatures in the runoff record.
+
+### State-Conditioned Operator Evaluation
+The second formulation is the simpler of the two—a standard regression mapping:
+
+$$Y_t = g_{\theta}(X_t).$$
+
+At its core, this is a functional mapping from inputs to outputs at a **single time level**. Unlike evolution operator learning, regression here treats data points as independent observations within a feature space, with no inherent requirement that the target must lie in the future. The goal is to learn a mapping function rather than to propagate a temporal trajectory.
+
+Unlike evolution operator learning, which is inherently sequential and relies on the temporal memory of the system's own state, state-conditioned operator evaluation is fully cross-sectional with respect to the time domain, conditioning predictions exclusively on concurrent driver variables rather than on the history of the target variable itself.
+
+### Multivariate Time Series (Adding the Drivers)
+Time series analysis need not operate in isolation from the physical system. In multivariate approaches, the physical drivers, the exogenous variables, are explicitly incorporated into the framework:
+
+$$y_t = \beta_1 {x_1}_t + \beta_2 {x_2}_t + \dots + \beta_n {x_n}_t + \phi\, y_{t-1} + \epsilon_t$$
+
+This allows the model to respond to external physical forcings $(x_{1,t}, x_{2,t}, \dots, x_{n,t})$ while the autoregressive term $\phi\, y_{t-1}$ accounts for temporal memory and delayed system response. In machine learning, this formulation can be generalized through a parametric state-update equation:
+
+$$h_t = f_\delta(X_t,\, h_{t-1})$$
+
+where $X_t$ represents all driver variables at the current time step, and $h_t$ encodes whatever information is inherited from previous time steps, typically in a latent space that can accumulate context over a sequence length extending well beyond a single lag.
+
+---
+
+the second important aspect is important aspect about the data characteristics is to understand its dependency whether in time or space. simply we can say MLWP data is spatiotemporal, ie having dependency on both time and space domains. so based on these we can define the task for ML. 
 
 <!-- 
 <span style="color:#137333">Choosing a machine learning model requires balancing the physical role of the target, the structure of the data, and practical constraints such as stability, resolution, and computational cost. For MLWP, the most important first question is: are we learning an evolution operator for the state, or are we learning an operator evaluated from the state?</span> -->
