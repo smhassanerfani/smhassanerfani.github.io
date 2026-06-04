@@ -98,14 +98,22 @@ better understanding of prognostics and diagnostics and their characteristics ca
 ## Machine Learning
 > **Disclaimer:** The data-driven landscape is more amorphous than traditional physics, defined largely by experimental conventions and evolving best practices. The ML terminology in this article is pragmatic rather than taxonomic. we choose terms in a way that help us better make our cases and help reader to easier follow what we are talking about and facilitate communiting between two realms (physics and data-driven)
 
-Choosing the right machine learning model requires a systematic approach that balances problem type, data characteristics, and practical constraints. Given what has been discussed in the previous sections, MLWP—whether at the dynamical core level or for specific physical processes—is generally framed as a **supervised learning** and **regression** problem. However, the ML literature often uses the word *prediction* broadly, which can obscure an important distinction relevant to MLWP.
+Choosing the right machine learning model requires a systematic approach that balances problem type, data characteristics, and practical constraints such as stability, resolution, and computational cost.
 
-This article therefore distinguishes between:
+### Problem Characteristics
+Given what has been discussed in the previous sections, MLWP—whether at the dynamical core level or for specific physical processes—is generally framed as a **supervised learning** and **regression** problem. However, the ML literature often uses the word *prediction* broadly, which can obscure an important distinction relevant to MLWP. This article therefore distinguishes between:
 
-1. **Evolution operator learning**
-2. **State-conditioned operator evaluation**
+1. **State-conditioned operator evaluation**
+2. **Evolution operator learning**
 
-### Evolution Operator Learning
+#### State-Conditioned Operator Evaluation
+The first formulation is the simpler of the two—a standard regression mapping:
+
+$$Y_t = g_{\theta}(X_t).$$
+
+At its core, this is a **functional mapping from inputs to outputs at a single time level** — a direct, memoryless transformation with no temporal dependencies encoded in the model itself. Each data point is treated as an **independent observation** within a feature space, making this fundamentally an interpolation problem. The model learns *what the output should look like given the current state*, rather than *how the system evolves over time*. Crucially, the temporal index $t$ plays no structural role here, i.e., it merely labels the sample. The goal, then, is to approximate the operator $g_\theta$ as faithfully as possible across the input domain, not to propagate a trajectory through time.
+
+#### Evolution Operator Learning
 Evolution operator learning concerns estimating the future state of a dynamical system. This can take the form of a transition operator,
 
 $$X_{t+\Delta t} = \mathcal{M}_{\theta}(X_t),$$
@@ -114,21 +122,16 @@ or a tendency operator,
 
 $$X_{t+\Delta t} = X_t + \Delta t\,\mathcal{F}_{\theta}(X_t),\qquad \frac{dX}{dt} = \mathcal{F}_{\theta}(X_t)$$
 
-Both formulations can be deployed autoregressively, since the output updates the evolving state. In other words, the model approximates either the transition or the tendency operator of a dynamical system. 
+Both formulations can be deployed autoregressively, since the output updates the evolving state. In other words, the model approximates either the transition or the tendency operator of a dynamical system. Unlike state-conditioned operator evaluation which is fully cross-sectional with respect to the time domain, evolution operator learning is fundamentally sequential: predictions are conditioned on the historical trajectory of the target variable, making temporal memory an intrinsic component of the formulation.
 
-This framing is not exclusive to the physical sciences. Hydrological time series forecasting, for example, applies the same principle, using statistical and machine learning methods to predict streamflow, rainfall, and groundwater levels from sequentially measured records. This does not imply that the variable is purely dependent on its own past values, but this approach is adopted pragmatically, justified by two key arguments: (1) understanding the variability of hydrological processes is inherently difficult due to their complex and stochastic nature, making explicit driver-based modeling challenging; and (2) the target variable carries implicit correlations with its physical drivers, since those drivers are themselves autocorrelated in time, i.e., past precipitation, soil moisture, and temperature leave detectable signatures in the runoff record.
+This does not imply, however, that the variable evolves solely under its own past values, independent of external forcings or drivers. Rather, this approach is adopted pragmatically, supported by two key arguments:
 
-### State-Conditioned Operator Evaluation
-The second formulation is the simpler of the two—a standard regression mapping:
+1. **Complexity of process variability**: the underlying dynamics are often intricate and stochastic in nature, making explicit driver-based modeling difficult to formulate and generalize.
+2. **Implicit driver signatures**: since the physical drivers are themselves autocorrelated in time, their influence leaves detectable imprints on the target variable's historical record, allowing past values to serve as indirect proxies for those drivers.
 
-$$Y_t = g_{\theta}(X_t).$$
+In hydrological time series forecasting, streamflow forecasting in particular, this rationale is well-grounded: the effects of antecedent precipitation, soil moisture, and temperature are embedded in the runoff record, making the variable's own history an informative, if indirect, reflection of its physical forcings.
 
-At its core, this is a functional mapping from inputs to outputs at a **single time level**. Unlike evolution operator learning, regression here treats data points as independent observations within a feature space, with no inherent requirement that the target must lie in the future. The goal is to learn a mapping function rather than to propagate a temporal trajectory.
-
-Unlike evolution operator learning, which is inherently sequential and relies on the temporal memory of the system's own state, state-conditioned operator evaluation is fully cross-sectional with respect to the time domain, conditioning predictions exclusively on concurrent driver variables rather than on the history of the target variable itself.
-
-### Multivariate Time Series (Adding the Drivers)
-Time series analysis need not operate in isolation from the physical system. In multivariate approaches, the physical drivers, the exogenous variables, are explicitly incorporated into the framework:
+Time series analysis need not operate in isolation from the physical system. In **multivariate approaches**, the physical drivers, the exogenous variables, are explicitly incorporated into the framework:
 
 $$y_t = \beta_1 {x_1}_t + \beta_2 {x_2}_t + \dots + \beta_n {x_n}_t + \phi\, y_{t-1} + \epsilon_t$$
 
@@ -136,60 +139,30 @@ This allows the model to respond to external physical forcings $(x_{1,t}, x_{2,t
 
 $$h_t = f_\delta(X_t,\, h_{t-1})$$
 
-where $X_t$ represents all driver variables at the current time step, and $h_t$ encodes whatever information is inherited from previous time steps, typically in a latent space that can accumulate context over a sequence length extending well beyond a single lag.
+where $X_t$ represents all driver variables at the current time step, and $h_t$ encodes whatever information is inherited from previous time steps, typically in a latent space (hidden state) that can accumulate context over a sequence length extending well beyond a single lag. The output $y_t$ is then computed from the updated hidden state.
+ 
+### Data Characteristics
+In data-driven modeling, the data ultimately constrain the choice of model. Understanding data characteristics, therefore, is not a preliminary formality; it is the foundation of the entire modeling process. For MLWP, the defining characteristic is spatiotemporal dependency: the data carry structure in both the time and space domains simultaneously. Recognizing this dependency allows us to translate a physical problem into a well-posed machine learning task.
 
----
-
-the second important aspect is important aspect about the data characteristics is to understand its dependency whether in time or space. simply we can say MLWP data is spatiotemporal, ie having dependency on both time and space domains. so based on these we can define the task for ML. 
-
-<!-- 
-<span style="color:#137333">Choosing a machine learning model requires balancing the physical role of the target, the structure of the data, and practical constraints such as stability, resolution, and computational cost. For MLWP, the most important first question is: are we learning an evolution operator for the state, or are we learning an operator evaluated from the state?</span> -->
-
-However!, problem is who is supposed to defin the task? If the task is defined by physical science, then the data are not just tensors; they are atmospheric states, diagnostic variables, tendencies, closures, and constraints. If the task is defined in a free-form data-driven context, then the same object may be described simply as a multichannel image sequence. These two descriptions can lead to different modeling instincts.
+With both the problem type and the data structure in hand, one might expect that configuring the experimental setup would be an easy task. However, it is not. The reason involves a more subtle question: who defines the task? The answer shapes not just the model architecture, but the entire framing of the problem. If the task is defined through the lens of physical science, the data are no longer mere tensors; they are atmospheric states, diagnostic variables, tendencies, closures, and physical constraints, each carrying domain-specific meaning. If, instead, the task is framed in a free-form, data-driven context, those same objects are reduced to multichannel spatiotemporal arrays—effectively, a video sequence. These two descriptions are not equivalent in practice: they activate different modeling instincts, favor different architectures, and carry different assumptions about what the model is expected to learn.
+<!-- For MLWP, the most important first question is: are we learning an evolution operator for the state, or are we learning an operator evaluated from the state?</span> -->
 
 Under the scientific formulation, current MLWP often learns a one-step transition operator and rolls it forward:
 
 $$X_{t+\Delta t} = \mathcal{M}_{\theta}(X_t), \qquad X_{t+n\Delta t} = \mathcal{M}_{\theta}^{(n)}(X_t).$$
 
-This mirrors NWP time stepping. 
+As it disscused before, this mathematical formalization mirrors NWP time-stepping. 
 
 Under a free-form spatiotemporal formulation, however, one may instead define the problem as sequence-to-sequence prediction:
 <!-- TODO change the formula to recurrence formula -->
 
 $$\{X_{t-k}, \ldots, X_t\} \mapsto \{X_{t+\Delta t}, \ldots, X_{t+m\Delta t}\}.$$
 
-A ConvLSTM, for example, may still generate future frames autoregressively, but it treats the problem as latent spatiotemporal pattern evolution rather than as an explicit learned numerical time-stepper. 
+This formalization may still generate future frames autoregressively, but it treats the problem as latent spatiotemporal pattern evolution rather than as an explicit learned numerical time-stepper. 
 
-This is the sense in which the genealogy matters: MLWP's dominant rollout strategy is inherited from the physical construction of weather prediction, not simply selected from generic data characteristics.
-
-### Time-Series vs Regression Analysis
-the second seciton of ML focus on the second issue, as discussed before to facilitate communiting between two realms, here we discriminate between time-series and regression analysis and define them equivallently with forecasting and prediciton, respectively.
-
-In this article, we define forecasting as estimating future states based on the history of a time series. The defining characteristic is the **temporal anchor**. We rely on the autocorrelation of the system—the principle that the state at time $t$ fundamentally influences the state at $t+1$. The objective is to project the known trajectory of the atmosphere forward into an unknown future, maintaining the continuity of the system's evolution.
-
-In MLWP, this corresponds to learning a transition operator such as</span>
-
-$$X_{t+\Delta t} = \mathcal{M}_{\theta}(X_t),$$
-
-or a tendency operator such as
-
-$$\frac{dX}{dt} = \mathcal{F}_{\theta}(X_t), \qquad X_{t+\Delta t} = X_t + \Delta t\,\mathcal{F}_{\theta}(X_t).$$
-
-Both formulations may be deployed autoregressively because the output updates the evolving state. But this is a specific scientific kind of autoregression: the model approximates either the transition operator or the tendency operator of a dynamical system.
-
-We define diagnostic prediction as estimating a quantity $Y_t$ from the instantaneous state $X_t$:
-
-$$Y_t = g_{\theta}(X_t).$$
-
-At its core, this is a functional mapping. Unlike time-series analysis, regression often treats data points as independent observations within a feature space, without an inherent requirement that the target must exist in the future, ie, it is an operator evaluation at a single time level.
-the goal is to learn a mapping function rather than project a temporal trajectory.
-The output may affect the future indirectly by entering a tendency equation, but it does not possess an independent time-integration rule unless the model explicitly gives it one. 
-<!-- TODO: it should get integrated, now the tone is not coherent -->
-
-By distinguishing between **forecasting** (projecting the trajectory forward via temporal correlation) and **prediction** (mapping inputs to outputs within a state space), we can better classify which components of the NWP system belong to which ML approach. This is the crux of our "principled trade-off": knowing whether our surrogate should be acting as a time-evolving forecaster or a diagnostic predictor.
+This is why the genealogy of these models matters: the dominant rollout strategy for MLWP (specifically concerning dynamical cores, rather than parameterization schemes) is inherited from the physical construction of numerical weather prediction (NWP) models, rather than being selected based solely on generic data characteristics. If we revisit the foundational papers in this field, we see they were written by atmospheric scientists deeply influenced by the traditional NWP framework, leading them to use machine learning primarily to surrogate the integration operator over space.
 
 ## Prognostics vs. Diagnostics in MLWP: A Misunderstood Distinction
-
 A critical yet frequently overlooked distinction in the geosciences community concerns the appropriate machine learning paradigm for prognostic versus diagnostic variables, and conflating the two leads to both conceptual and methodological errors. Prognostic variables — such as wind components, temperature, or moisture — are governed by PDEs containing explicit time derivatives, meaning their evolution constitutes an **Initial Value Problem (IVP)**. Their estimation is inherently a **forecasting** task: the future state $\psi(t + \Delta t)$ is obtained by numerically integrating the tendency $F(\psi)$ forward in time. 
 
 <!-- Among the ML methods, spatiotemporal task (wether autoregressive rollout or recurrent approach) is the natural and physically justified ML paradigm for this task — whether the surrogate emulates only the tendency operator (partial integration) or the complete one-step transition (full integration), the autoregressive structure faithfully mirrors the Markovian, time-marching nature of the underlying physics. -->
