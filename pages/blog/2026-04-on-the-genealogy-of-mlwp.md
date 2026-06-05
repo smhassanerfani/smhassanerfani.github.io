@@ -139,6 +139,7 @@ This allows the model to respond to external physical forcings $(x_{1,t}, x_{2,t
 
 $$h_t = f_\delta(X_t,\, h_{t-1})$$
 
+<!-- TODO: which is the key role here, as it can include short-term pattern and long-term trends in inside -->
 where $X_t$ represents all driver variables at the current time step, and $h_t$ encodes whatever information is inherited from previous time steps, typically in a latent space (hidden state) that can accumulate context over a sequence length extending well beyond a single lag. The output $y_t$ is then computed from the updated hidden state.
  
 ### Data Characteristics
@@ -160,90 +161,85 @@ $$\{X_{t-k}, \ldots, X_t\} \mapsto \{X_{t+\Delta t}, \ldots, X_{t+m\Delta t}\}.$
 
 This formalization may still generate future frames autoregressively, but it treats the problem as latent spatiotemporal pattern evolution rather than as an explicit learned numerical time-stepper. 
 
-This is why the genealogy of these models matters: the dominant rollout strategy for MLWP (specifically concerning dynamical cores, rather than parameterization schemes) is inherited from the physical construction of numerical weather prediction (NWP) models, rather than being selected based solely on generic data characteristics. If we revisit the foundational papers in this field, we see they were written by atmospheric scientists deeply influenced by the traditional NWP framework, leading them to use machine learning primarily to surrogate the integration operator over space.
+This is the sense in which the genealogy of these models matters. The dominant rollout strategy in MLWP, specifically at the level of the dynamical core rather than parameterization schemes, is not simply selected from generic data-driven principles; it is inherited from the physical construction of NWP models. Revisiting the foundational papers in this field, one finds they were written by atmospheric scientists deeply shaped by the NWP tradition, which led them to deploy machine learning primarily as a surrogate for the numerical integration operator over the spatial domain.
 
-## Prognostics vs. Diagnostics in MLWP: A Misunderstood Distinction
-A critical yet frequently overlooked distinction in the geosciences community concerns the appropriate machine learning paradigm for prognostic versus diagnostic variables, and conflating the two leads to both conceptual and methodological errors. Prognostic variables — such as wind components, temperature, or moisture — are governed by PDEs containing explicit time derivatives, meaning their evolution constitutes an **Initial Value Problem (IVP)**. Their estimation is inherently a **forecasting** task: the future state $\psi(t + \Delta t)$ is obtained by numerically integrating the tendency $F(\psi)$ forward in time. 
+In this light, MLWP is best understood as an embedded surrogate: a computationally efficient approximate model trained to mimic the behavior of a more expensive and physically explicit system, namely NWP. What this surrogate is tasked with predicting are the **prognostic variables** — wind components, temperature, moisture, and related quantities — whose evolution is governed by PDEs with explicit time derivatives. Their dynamics therefore constitute an **Initial Value Problem (IVP)**, and their estimation is, at its core, a **time series forecasting** task, most naturally framed under evolution operator learning.
 
-<!-- Among the ML methods, spatiotemporal task (wether autoregressive rollout or recurrent approach) is the natural and physically justified ML paradigm for this task — whether the surrogate emulates only the tendency operator (partial integration) or the complete one-step transition (full integration), the autoregressive structure faithfully mirrors the Markovian, time-marching nature of the underlying physics. -->
+The appropriate machine learning paradigm for diagnostic variables and the targets of physical process parameterizations, however, does not follow the same logic. Unlike prognostics, these quantities do not evolve independently through time, i.e., they are derived from, or functionally related to, the current prognostic state. Their suitable ML formulation therefore depends on how that relationship is parameterized: whether the target is expressed as an instantaneous function of the current state, or whether it carries its own temporal structure. The distinction matters in practice, and the following examples illustrate how different parameterization choices lead to different modeling approaches.
 
-<!-- <span style="color:#137333">A critical but often blurred distinction in MLWP concerns the physical role of prognostic versus diagnostic quantities. Prognostic variables—such as wind components, temperature, or moisture—are governed by equations containing explicit time derivatives. Their evolution constitutes an **initial-value problem (IVP)**. A model that predicts their future value, or their tendency, is approximating a time-evolution operator. Autoregressive rollout is therefore physically justified when the learned output is the evolving atmospheric state or a tendency used to update that state.</span> -->
+## Diagnostics and Parameterization of Physical Processes
+Not all variables in a physical model evolve through time in the same way. Some variables — the **prognostic variables** — have explicit time derivatives governing their evolution. They are marched forward in time step by step, and their estimation is naturally a time series forecasting problem framed as evolution operator learning, as discussed above. Other variables, however, do not have their own evolution equations. Instead, they are determined entirely by the current state of the prognostic variables at each time step. These are the **diagnostic variables**, and in the simplest case their relationship to the prognostic state takes the form of a direct functional mapping:
 
-<!-- <span style="color:#b00020"><s>Diagnostic variables, however, are categorically different: they carry no time derivative, possess no memory, and are determined entirely by an instantaneous functional mapping of the current prognostic state, i.e., D(t) = g(ψ(t)). Their estimation is therefore fundamentally a **regression** (prediction) task, not a forecasting task — there is no temporal constraint, no IVP to solve, and no integration to emulate.</s></span> -->
+$$D_t = g(\psi_t)$$
 
-Diagnostic variables and many closure terms have a different role. In the simplest case, they are determined by an instantaneous functional mapping of the current prognostic state:
+where $\psi_t$ is the current prognostic state. Because there is no independent evolution law governing $D_t$, its estimation is better understood as **state-conditioned operator evaluation** rather than evolution operator learning. An important clarification here: diagnostic variables do exhibit temporal correlation in observed data, but that correlation is inherited from the prognostic state driving them, not from any autonomous dynamics of their own.
 
-$$D_t = g(\psi_t).$$
+Whether a physical process is treated as prognostic or diagnostic often depends on how it is **parameterized** — that is, how its relationship to the resolved model variables is expressed mathematically. This parameterization choice directly determines which ML formulation is appropriate.
 
-Their estimation is therefore better understood as prediction operator rather than state forecasting. The practical implication is not that such quantities lack temporal correlation in observed data but their temporal dependence is inherited from the prognostic state, not from an independent evolution law.
+### Friction in the Shallow Water Equations
+To make this concrete, consider the one-dimensional **shallow water equations (SWE)**, which describe conservation of mass and momentum for a depth-averaged free-surface flow:
 
-To illustrate this distinction, consider the one-dimensional shallow water equations. These equations express conservation of mass and momentum for a depth-averaged, free-surface flow. In conservation form they read:
+$$\frac{\partial h}{\partial t} + \frac{\partial (hu)}{\partial x} = 0$$
 
-$$
-\frac{\partial h}{\partial t} + \frac{\partial (hu)}{\partial x} = 0
-$$
+$$\frac{\partial (hu)}{\partial t} + \frac{\partial}{\partial x}\!\left(hu^2 + \tfrac{1}{2}gh^2\right) = -gh\,\frac{\partial z_b}{\partial x} - S_f$$
 
-$$
-\frac{\partial (hu)}{\partial t} + \frac{\partial}{\partial x}\!\left(hu^2 + \tfrac{1}{2}gh^2\right) = -gh\,\frac{\partial z_b}{\partial x} - S_f
-$$
+where $h$ is water depth $[\text{m}]$, $u$ is depth-averaged velocity $[\text{m/s}]$, $g$ is gravitational acceleration $[\text{m/s}^2]$, $z_b$ is bed elevation $[\text{m}]$, and $S_f$ is the friction slope — a source term encoding energy losses due to bed resistance.
 
-where
+The **prognostic variables** here are $h$ and $u$: they carry explicit time derivatives and are stepped forward in time, making their estimation an IVP and a natural evolution operator learning task.
 
-- $h$ — water depth $[\text{m}]$
-- $u$ — depth-averaged velocity $[\text{m/s}]$
-- $g$ — gravitational acceleration $[\text{m/s}^2]$
-- $z_b$ — bed elevation $[\text{m}]$
-- $S_f$ — friction slope (source term) encoding energy losses due to bed resistance
+**Friction**, by contrast, represents a physical process that must be parameterized rather than directly resolved. The frictional force arises from shear stress between the flowing water and the channel bed and sides, and it is expressed through the friction slope $S_f$ as:
 
-For many friction-loss formulations, the friction slope is written in a general power-law form:
-
-$$
-S_f = \frac{C\,V\,|V|^{m-1}}{R^p}
-$$
+$$S_f = \frac{C\,V\,|V|^{m-1}}{R^p}$$
 
 where $C$ and $p$ are coefficients determined by the chosen friction law, $V$ is the flow velocity magnitude, $R$ is the hydraulic radius, and $m$ depends on the flow regime.
 
-In the SWE, the prognostic variables are the conserved quantities $h$ and $hu$, which are marched forward in time. The friction slope $S_f$, by contrast, is a diagnostic source term calculated from the current flow state and bed geometry. This makes $S_f$ a natural regression target rather than a forecasting variable.
+Critically, $S_f$ has no time derivative of its own. It is computed directly from the current flow state $(h, u)$ at each time step. This makes it a **diagnostic quantity**: its value is fully determined by the present prognostic state, with no memory of its own past values. As a result, learning $S_f$ is a state-conditioned operator evaluation where the model learns to map the current flow conditions to the corresponding frictional response. It is not, and should not be treated as, a forecasting problem.
 
-<!-- A concrete example is the friction slope in the Shallow Water Equations (SWE): it is a diagnostic quantity computed algebraically from the current flow state, including the prognostic depth $h$ through the hydraulic radius $R$. The term $R$ is typically a function of flow depth and channel geometry, so $S_f$ depends on both the velocity and the current state of $h$. It then feeds back into the momentum equation to forecast $hu$ at the next time step. The proper ML treatment here is therefore a direct functional mapping from the instantaneous prognostic state $(h(t),u(t))$ to the diagnostic friction slope $S_f(t)$, making it a regression problem contained within a single time level. -->
+### Atmospheric Tracer Transport
+A second, richer example comes from atmospheric tracer transport. What makes it particularly instructive is that it can be viewed at two different levels of abstraction — each revealing a different modeling challenge. At the finer level, the tracer transport equation itself contains a physical process that must be parameterized: **vertical convection**. At the coarser level, the entire tracer transport model can be viewed as a parameterized physical process coupled within a larger climate or NWP model. Both perspectives are worth examining.
 
-A second example comes from atmospheric tracer transport. When numerically integrating the continuity equation for a tracer $\mu$ over a grid, the operator is typically split into horizontal advection and vertical convection. While horizontal subgrid-scale closure is generally ignored, vertical convection must be parameterized, yielding the equation:
+#### The Governing Equation
+When numerically integrating the continuity equation for a tracer $\mu$ over a discrete grid, the operator is typically split into horizontal advection and vertical convection. Horizontal subgrid-scale closure is generally neglected, but vertical convection must be explicitly parameterized, yielding:
 
-$$
-\frac{d\mu}{dt} + u\frac{d\mu}{dx} + v\frac{d\mu}{dy} + w\frac{d\mu}{dz} = \Sigma
-$$
+$$\frac{d\mu}{dt} + u\frac{\partial\mu}{\partial x} + v\frac{\partial\mu}{\partial y} + w\frac{\partial\mu}{\partial z} = \Sigma$$
 
-as we dicussed before, the vertical velocity $w$ is a diagnostics and is function of updraft $\omega$, temperature $T$, specific humidity $q$, and geopotential height $z$. i.e., $w = f(\omega, T, q, z)$.
+Here, the tracer concentration $\mu$ is the **prognostic variable** — it carries an explicit time derivative and is stepped forward in time, making its evolution an IVP governed by evolution operator learning.
 
-apart from parameterizing just the vertical components, if we wanna surrogate the whole system in Neural network, we can consider the overall instantaneous time derivative (tendency) as follows 
+The vertical velocity $(w)$, however, is a **diagnostic variable**. It has no evolution equation of its own and is instead determined from the current atmospheric state:
 
-$$
-\frac{d\mu}{dt} = f(\mu, u, v, \omega, T, q, z, \dots; \theta)
-$$
+$$w = f(\omega, T, q, z)$$
 
-In this formulation, the neural network $f(\cdot; \theta)$ performs a pure regression task—mapping the current, instantaneous state variables to the diagnostic tendency $\frac{d\mu}{dt}$. Because this mapping possesses no memory, it is a regression problem contained entirely within a single time level. Once this diagnostic regression outputs the approximated tendency $\Delta\mu_t$, the prognostic tracer $\mu$ is marched forward in time via an integration scheme, such as an Euler step $\mu_{t+1} = \mu_t + \frac{d\mu}{dt}$. in the bigger lense, we can see the overall itendency as a parametrization inside the bigger formula (NWP) which require the prognostics ingredients as well as some other spices.
+where $\omega$ is the updraft velocity, $T$ is temperature, $q$ is specific humidity, and $z$ is geopotential height. Its value is fully determined by the present prognostic state at each time step, making it a natural target for state-conditioned operator evaluation, a regression problem with no temporal memory of its own.
 
-## Embedded Surrogates vs. Free-Form Data-Driven Models
+If instead of parameterizing only the vertical component one wishes to surrogate the entire right-hand side with a neural network, the problem can be recast in terms of the overall instantaneous tendency of the tracer:
 
-In this work, we distinguish between two fundamentally different uses of data-driven models in scientific systems. Both aim to replace an expensive function with a cheaper approximation, but they differ in key ways. The first approach involves building a computationally efficient approximate model that mimics a more expensive or complex system, such as a CFD simulation, climate model, or physical experiment. This is like physics-aware substitution, where the goal is to replace a specific component of a known governing model while respecting its overall structure, constraints, and meaning. The ultimate aim is efficiency without breaking the model. In contrast, the second approach treats the original system as an unknown function. Here, we do not focus on internal mechanisms, governing equations, or physical interpretation. This is like context-agnostic learning, with no commitment to physical meaning. The goal is to learn patterns, not the system itself. Hereinafter, we call the first approach embedded surrogate modeling, where machine learning is integrated inside a governing system. The second is called free-form data-driven modeling, with no physical constraints or system knowledge.
+$$\frac{d\mu}{dt} = f_{\theta}(\mu,\, u,\, v,\, \omega,\, T,\, q,\, z,\, \dots)$$
 
-Choosing the best machine learning model requires a systematic approach that balances the problem type (first approach) with data characteristics (second approach).
+Once the network produces the approximate tendency, the prognostic tracer is marched forward using a numerical integration scheme — for example, a simple Euler step:
 
-Both approaches can be useful, but they should not be evaluated by the same conceptual standard. Embedded surrogates are judged by whether they preserve the meaning and stability of the larger system. Free-form models are judged by whether they forecast well from the data representation they are given. MLWP often sits between these extremes, which is why clarity about the target's physical role matters.
+$$\mu_{t+1} = \mu_t + \frac{d\mu}{dt} \cdot \Delta t$$
 
-<!-- The central tension in MLWP is that many benchmark datasets, such as WeatherBench-style gridded reanalysis datasets, look like free-form tensor sequences to ML, but they are assembled from variables whose meaning comes from NWP and atmospheric dynamics. -->
+so if we see these two euqaiton at once, the evolution operator learning can be applied to not only the approximate tendency, but handles the prognostic evolution, progressively. in this formalizaiton, autoregressive rollout can natually expalin this formalizaiton. 
 
-## Why Genealogy Matters
+#### The Broader View
+Zooming out, this same tendency network can itself be seen as a parameterization embedded inside a larger NWP or climate model. From that perspective, the entire tracer transport module is one physical process among many, coupled to the broader model through the shared prognostic state. The inputs to this parameterization are not just tracer-specific quantities but common atmospheric state variables — temperature, humidity, and winds — that are resolved by the host NWP model.
 
-So far, this discussion may sound like an attempt to build a taxonomy or introduce new terminology. However, I want to emphasize that this is not our goal. Establishing a formal taxonomy requires broad agreement within the community, and any such effort should align with existing conventions. We intentionally avoid that kind of pedantry and its associated pitfalls. Instead, our aim is simply to clarify the perspective we are taking. From this standpoint, some components appear conceptually distorted, and we will briefly explain how we interpret them so that we are on the same page before introducing the core problem.
+This broader view naturally motivates a **multivariate evolution operator learning** approach. The NWP-resolved prognostics, together with prescribed boundary fluxes, serve as the external drivers fed into the model. All internal processes (e.g., advection, convection, and subgrid-scale mixing) are then absorbed implicitly into the learned hidden state dynamics, without needing to be explicitly represented. In this formulation, the output layer acts directly as the transition operator, mapping the current hidden state to the tracer concentration field at the next time step.
+
+This is an important shift in perspective. At the finer scale, the tracer tendency is approximated by a neural network and rolled out autoregressively, making the tracer a prognostic quantity governed by evolution operator learning. At the coarser scale, however, when the entire transport module is embedded within a host NWP model, the tracer field becomes a parameterization of a physical process — and by our earlier convention, this makes it a diagnostic quantity whose evolution is fully driven by the externally resolved atmospheric state ($u$, $v$, $T$, and $q$). In this view, the appropriate surrogate is no longer an autoregressive tendency model but a learned transition operator, most naturally realized through a recurrent neural network, that maps the sequence of atmospheric states directly to the tracer concentration field at the next time step.
+
+## Conclusion
+In this work, we distinguish between two fundamentally different uses of data-driven models in scientific systems. Both aim to replace an expensive function with a cheaper approximation, but they differ in key ways. The first approach involves building a computationally efficient approximate model that mimics a more expensive or complex system, such as a CFD simulation, climate model, or physical experiment. This is like physics-aware substitution, where the goal is to replace a specific component of a known governing model while respecting its overall structure, constraints, and meaning. The ultimate aim is efficiency without breaking the model. In contrast, the second approach treats the original system as an unknown function. Here, we do not focus on internal mechanisms, governing equations, or physical interpretation. This is like context-agnostic learning, with no commitment to physical meaning. The goal is to learn patterns, not the system itself. We can call the first approach embedded surrogate modeling, where machine learning is integrated inside a governing system. The second is called free-form data-driven modeling, with no physical constraints or system knowledge.
+
+Choosing the best machine learning model requires a systematic approach that balances the problem type (first approach) with data characteristics (second approach). Both approaches can be useful, but they should not be evaluated by the same conceptual standard. Embedded surrogates are judged by whether they preserve the meaning and stability of the larger system. Free-form models are judged by whether they forecast well from the data representation they are given. MLWP often sits between these extremes, which is why clarity about the target's physical role matters.
+
+<!-- Part of this discussion may sound like an attempt to build a taxonomy or introduce new terminology. However, we want to emphasize that this is not our goal. Establishing a formal taxonomy requires broad agreement within the community, and any such effort should align with existing conventions. We intentionally avoid that kind of pedantry and its associated pitfalls. Instead, our aim is simply to clarify the perspective we are taking. From this standpoint, some components appear conceptually distorted, and we will briefly explain how we interpret them so that we are on the same page before introducing the core problem. -->
 
 The issue arises when we refer to a *data-driven method*. Ideally, this would mean a method dictated by the intrinsic characteristics of the data itself. However, this is not quite what happens in machine learning–based weather prediction. If we present the data to domain experts and ask—strictly in a context-free, domain-agnostic manner—what class of models would be appropriate, very few would suggest an auto-regressive rollout approach. Instead, they would typically propose spatiotemporal modeling strategies.
 
 Modern MLWP inherited the autoregressive rollout not solely from machine learning sequence models, but also from the NWP view of weather as an initial-value problem. Reanalysis datasets provide gridded atmospheric states at successive times; numerical models march states forward; ML models are then trained to imitate the observed or analyzed transition from $X_t$ to $X_{t+\Delta t}$. This genealogy explains why state-to-state autoregression became the dominant template. In this setting, a simple autoregressive rollout is not an arbitrary ML choice. It is the learned analogue of a numerical weather model's time step.
 
-But if we remove the physical semantics and describe the same object only as a multichannel gridded tensor sequence, the modeling instinct changes. A free-form ML formulation would emphasize spatiotemporal representation learning: ConvLSTM, encoder-decoder recurrent networks, temporal convolutional networks, video-prediction models, or transformer-based sequence models. A ConvLSTM can still be autoregressive, but its recurrence is organized around latent spatiotemporal memory and frame evolution, not around an explicit approximation of an NWP time-step operator. Therefore, saying "both are autoregressive" hides the important difference: one autoregression is genealogically tied to numerical integration, while the other is tied to generic sequence modeling.
-
-At this point, the question of *genealogy* becomes important. We need to step back and examine how the current approach emerged: when it started, how it developed, and how this apparent deviation from a purely data-driven perspective came about.
+But if we remove the physical semantics and describe the same object only as a multichannel gridded tensor sequence, the modeling instinct changes. A free-form ML formulation would emphasize spatiotemporal representation learning: ConvLSTM, encoder-decoder recurrent networks, temporal convolutional networks, video-prediction models, or transformer-based sequence models. These models can still be autoregressive, but its recurrence is organized around latent spatiotemporal memory and frame evolution, not around an explicit approximation of an NWP time-step operator. Therefore, saying "both are autoregressive" hides the important difference: one autoregression is tied to numerical integration, while the other is tied to generic sequence modeling.
 
 
 > **Prompt:** Based on the following description of my data, what type of ML model would you recommend? Do not consider what we have already discussed in our previous chats.
@@ -265,9 +261,3 @@ At this point, the question of *genealogy* becomes important. We need to step ba
 > - Increment prediction: learning $\Delta X_t = g(X_t)$ such that $X_{t+1} = X_t + \Delta X_t$
 >
 > No assumptions are made about the underlying generative process, the semantics of the channels, or any governing equations. The problem is treated purely as learning a mapping between sequences of high-dimensional tensors, analogous to sequence modeling or video prediction tasks.
-
-## Conclusion
-
-<span style="color:#1a73e8">The article therefore makes two claims. The first is a modeling claim: MLWP should distinguish prognostic state variables from diagnostic variables, closures, and parameterized tendencies. These quantities may live in the same dataset, but they do not play the same role inside the physical system. The second is a genealogical claim: the simple autoregressive rollout used in much of modern MLWP is inherited from the NWP framing of weather as an initial-value problem. In a free-form ML context, the same gridded tensor sequence could motivate a different family of models, such as ConvLSTM or other spatiotemporal sequence architectures. These models may also be autoregressive, but they are autoregressive in a different sense: they model sequence evolution through learned spatiotemporal memory rather than imitating the time step of a numerical weather model.</span>
-
-<span style="color:#1a73e8">The purpose is not to reject NWP-style MLWP. It is to make the inheritance explicit. Once the genealogy is visible, we can ask a sharper question: are we building a scientific surrogate that should preserve the structure of the governing system, or are we building a free-form data-driven model that should be chosen from the structure of the data alone?</span>
