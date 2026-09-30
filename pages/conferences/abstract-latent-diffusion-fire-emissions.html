@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Abstract — Probabilistic Latent Diffusion for Downscaling Fire Emissions in NASA GISS Earth System Model</title>
+  <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <main style="max-width:800px;margin:3rem auto;padding:1rem;">
+    <h2>Abstract</h2>
+    <p>
+      Generative diffusion models have recently shown promise for closing the gap between the need for broad, high-resolution climate data and the lack of fine-scale variability in coarse-resolution atmospheric and climate modeling products. We introduce Latent CorrDiff, a downscaling system that combines a deterministic regression baseline with a diffusion stage that models the fine-scale atmospheric residuals entirely inside a low-resolution latent space to address large resolution ratios with significantly improved computational efficiency. The proposed model is applied to ERA5 reanalysis at ~27 km resolution, producing physically consistent 4 km surface fields over the continental United States. The model downscales six meteorological features that drive local fire weather conditions. Because the diffusion process operates at one-sixteenth the spatial resolution of the output, inference is 6.8× faster and uses 5× less memory than an equivalent pixel-space approach while preserving fine-scale spectral structure. While this framework was applied here to downscale variables critical for wildfire modeling within the NASA GISS climate model, our results demonstrate that Latent CorrDiff is generalizable to a wide range of climate modeling products across diverse applications.
+    </p>
+  </main>
+</body>
+</html>
